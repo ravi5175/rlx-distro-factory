@@ -1,0 +1,20 @@
+# Description: Compression and decompression routines used by some programs
+# URL: https://www.zlib.net/
+
+name=zlib
+version=1.2.11
+release=1
+source="https://zlib.net/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+	
+	[[ $BOOTSTRAP ]] && {
+		export CHOST=$TARGET
+		export CC=$CC
+	}
+
+	./configure --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

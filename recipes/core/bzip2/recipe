@@ -1,0 +1,37 @@
+# Description: Programs for compressing and decompressing files
+# URL: https://sources.redhat.com/bzip2
+
+name=bzip2
+version=1.0.8
+release=1
+source="https://www.sourceware.org/pub/bzip2/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
+	sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
+	sed -i "/^all:/s/ test//" Makefile
+	
+	[[ $BOOTSTRAP ]] && {
+		make CC="${CC}" AR=$AR RANLIB=$RANLIB -f Makefile-libbz2_so
+		make CC="${CC}" AR=$AR RANLIB=$RANLIB all
+	} || {
+		make -f Makefile-libbz2_so
+		make
+	}
+	
+	make PREFIX=$pkg/usr install
+
+	mkdir -p $pkg/usr/bin $pkg/usr/lib
+
+	cp bzip2-shared $pkg/usr/bin/bzip2
+	cp libbz2.so* $pkg/usr/lib -av
+	
+	ln -s libbz2.so.1.0 $pkg/usr/lib/libbz2.so
+	
+	rm $pkg/usr/bin/bunzip2 \
+	   $pkg/usr/bin/bzcat
+	ln -s bzip2 $pkg/usr/bin/bunzip2
+	ln -s bzip2 $pkg/usr/bin/bzcat
+}

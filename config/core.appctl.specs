@@ -1,0 +1,71 @@
+set +h
+umask 022
+export RLX=$(pwd)/rlx
+export LC_ALL=POSIX
+export PATH=${RLX}/cross-tools/bin:/bin
+export RLX_ARCH=${CARCH:-x86_64}
+export RLX_HOST="$(echo ${MACHTYPE} | sed -e 's/-[^-]*/-cross/')"
+export RLX_SRC_DIR=$(pwd)/cache/src/
+export RLX_BUILD_DIR=$(pwd)/cache/work/
+export RLX_CACHE=$(pwd)/cache
+export MAKEFLAGS=-j8
+case "$RLX_ARCH" in
+	x86_64)
+		export RLX_TGT="x86_64-linux-musl"
+		;;
+		
+	i686)
+		export RLX_TGT="i686-linux-musl"
+		;;
+		
+	aarch64)
+		export RLX_TGT="aarch64-linux-musl"
+		;;
+		
+	armv7hl)
+		export RLX_TGT="arm-linux-musleabihf"
+		;;
+		
+	armv6hl)
+		export RLX_TGT="arm-linux-musleabi"
+		;;
+		
+	ppc64le)
+		export RLX_TGT="powerpc64le-linux-musl"
+		;;
+		
+	ppc64)
+		export RLX_TGT="powerpc64-linux-musl"
+		;;
+		
+	s390x)
+		export RLX_TGT="s390x-linux-musl"
+		;;
+		
+	riscv64)
+		export RLX_TGT="riscv64-linux-musl"
+		;;
+	*)
+		echo "unsupport architecture $RLX_ARCH"
+		exit 1
+esac
+
+
+export CFLAGS="-O2 -march=x86-64 -pipe"
+export CXXFLAGS="${CFLAGS}"
+
+export BOOTSTRAP=1
+
+export CC="$RLX_TGT-gcc --sysroot=$RLX/rootfs"
+export CXX="$RLX_TGT-g++ --sysroot=$RLX/rootfs"
+export AR=$RLX_TGT-ar
+export AS=$RLX_TGT-as
+export RANLIB=$RLX_TGT-ranlib
+export LD="$RLX_TGT-ld --sysroot=$RLX/rootfs"
+export STRIP=$RLX_TGT-strip
+
+export TARGET=$RLX_TGT
+export HOST="$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/")"
+export CARCH="$(uname -m)"
+
+export RLX LC_ALL RLX_TGT PATH SKIP_STRIP MAKEFLAGS

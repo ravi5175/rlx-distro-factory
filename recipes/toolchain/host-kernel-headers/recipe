@@ -1,0 +1,20 @@
+# Description: linux kernel headers
+# Maintainer: itsmanjeet@rlxos.dev
+
+name=kernel-headers
+version=5.8.13
+release=1
+source=https://www.kernel.org/pub/linux/kernel/v5.x/linux-$version.tar.xz
+
+build() {
+
+	cd linux-$version
+	make mrproper
+	make ARCH=${RLX_ARCH} headers
+	find usr/include -name '.*' -delete
+	rm usr/include/Makefile
+	
+	mkdir -pv $pkg/$RLX/cross-tools/${RLX_TGT}/usr/include/
+	
+	cp -rv usr/include/* $pkg/$RLX/cross-tools/${RLX_TGT}/usr/include/
+}

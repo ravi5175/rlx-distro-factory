@@ -1,0 +1,21 @@
+# Description: cross toolchain musl
+# Maintainer: itsmanjeet@rlxos.dev
+
+name=host-musl
+_name=musl
+version=1.1.24
+release=1
+source="https://www.musl-libc.org/releases/musl-$version.tar.gz"
+
+build() {
+    cd $_name-$version
+    
+	./configure	\
+		CROSS_COMPILE=${RLX_TGT}-	\
+		--prefix=/usr				\
+		--target=${RLX_TGT}
+		
+	make
+
+	DESTDIR=$pkg/${RLX}/cross-tools/$RLX_TGT make install
+}

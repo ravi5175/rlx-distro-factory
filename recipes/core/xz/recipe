@@ -1,0 +1,23 @@
+# Description: Programs for compressing and decompressing files
+# URL: https://tukaani.org/xz/
+
+name=xz
+version=5.2.5
+release=1
+source="https://tukaani.org/$name/$name-$version.tar.xz"
+
+build() {
+
+	cd $name-$version
+	
+	[[ $BOOTSTRAP ]] && {
+		_extra="--host=$TARGET --build=$HOST"
+	}
+	
+	./configure							\
+		    --prefix=/usr 				\
+	        --disable-static 			\
+	        $_extra
+	make
+	make DESTDIR=$pkg install
+}

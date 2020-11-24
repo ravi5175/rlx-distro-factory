@@ -1,0 +1,50 @@
+# Description: lightweight implementation of c standard library
+# URL: https://www.musl-libc.org/
+# Maintainer: itsmanjeet@rlxos.dev
+# Category: Library
+# License: 
+
+name=musl
+version=1.1.24
+release=1
+source="https://www.musl-libc.org/releases/musl-$version.tar.gz
+		getconf.c
+		getconf.1
+		iconv.c
+		tree.h
+		queue.h
+		cdefs.h"
+
+build() {
+    cd $name-$version
+    
+    [[ $BOOTSTRAP ]] && {
+    	_extra="--host=$TARGET --build=$HOST --target=$TARGET"
+    }
+    
+    ./configure --prefix=/usr \
+    	$_extra
+    	
+    make
+    make DESTDIR=$pkg install
+    
+	mkdir -pv $pkg/usr/{sbin,bin}
+	ln -sv /lib/ld-musl-$CARCH.so.1 $pkg/usr/bin/ldd
+	
+	ln -s /bin/true $pkg/usr/sbin/ldconfig
+	
+	for i in $source ; do
+		case $i in
+			*.h)
+				install -vDm644 $src/$i -t $pkg/usr/include/sys/
+				;;
+			*.1)
+				install -vDm644 $src/$i -t $pkg/usr/share/man/man1/
+				;;
+			*.c)
+				${CC:-gcc} -D_XOPEN_SOURCE=700 $CFLAGS $LDFLAGS -fpie $src/$i -o $pkg/usr/bin/$i
+				;;
+		esac
+	done
+    
+}
