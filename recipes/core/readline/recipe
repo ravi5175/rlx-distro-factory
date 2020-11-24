@@ -17,9 +17,10 @@ build() {
 	sed -i '/{OLDSUFF}/c:' support/shlib-install
 
 	./configure			\
-		    --prefix=/usr    	\
-	            --disable-static	\
-	            --docdir=/usr/share/$name/
+		--prefix=/usr    	\
+		--disable-static	\
+		--docdir=/usr/share/$name/	\
+		$_extra
 	
 	[[ -d /tools/lib ]] &&  TLDIR="-L/tools/lib"
 	

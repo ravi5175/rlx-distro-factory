@@ -89,6 +89,7 @@ for i in $(cat pkgs.list) ; do
 		echo "specifications file missing"
 		exit 1
 	}
+	[[ $i == 'file' ]] && rm $RLX/rootfs
 	APPCTL_SPECS=$(pwd)/$RLX_ARCH.appctl.specs	\
 	appctl install $i							\
 	config=$(pwd)/$RLX_ARCH.appctl.conf
@@ -96,5 +97,7 @@ for i in $(cat pkgs.list) ; do
 		echo "failed to build $i"
 		exit 1
 	}
+	
+	[[ $i == 'file' ]] && ln -sv . $RLX/rootfs
 
 done

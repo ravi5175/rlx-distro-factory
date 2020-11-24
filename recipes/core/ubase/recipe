@@ -1,0 +1,20 @@
+# Description: collection of unportable tools
+# URL: https://git.suckless.org/ubase/
+# Maintainer: itsmanjeet@rlxos.dev
+# Depends on: musl libressl
+# Category: system
+# License: MIT
+
+name=ubase
+version=0.1.0
+release=1
+source="$name-$version.tar.gz::https://github.com/releax/ubase/archive/$version.tar.gz
+		config.mk"
+
+build() {
+	cd $name-$version
+	
+	cp $src/config.mk .
+	
+	make install DESTDIR=$pkg
+}
