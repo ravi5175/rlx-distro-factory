@@ -1,0 +1,5 @@
+NAME="rlxos 0.1.0"
+ID="rlxos"
+PRETTY_NAME="rlxos stable"
+ANSI_COLOR="1;32"
+BUILD_ID="rolling"

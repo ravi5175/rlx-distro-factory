@@ -1,4 +1,6 @@
 cache/
-pkgs/
-rlx/
+pkgs.*/
+rlx.*/
 .data
+*.appctl.conf
+*.appctl.specs

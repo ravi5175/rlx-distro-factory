@@ -29,7 +29,7 @@ build() {
     make DESTDIR=$pkg install
     
 	mkdir -pv $pkg/usr/{sbin,bin}
-	ln -sv /lib/ld-musl-$CARCH.so.1 $pkg/usr/bin/ldd
+	ln -sv /lib/ld-musl-$RLX_ARCH.so.1 $pkg/usr/bin/ldd
 	
 	ln -s /bin/true $pkg/usr/sbin/ldconfig
 	

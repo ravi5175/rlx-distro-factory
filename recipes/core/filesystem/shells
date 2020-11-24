@@ -1,0 +1,8 @@
+#
+# /etc/shells: login shells list
+# `chsh` use this file to provide access to unprivileged user to change
+# available login shell
+#
+
+/bin/sh
+/bin/bash

@@ -1,0 +1,28 @@
+# Description: Set of libraries that offers command-line editing and history capabilities
+# URL: https://tiswww.case.edu/php/chet/readline/rltop.html
+# Depends on: ncurses
+
+name=readline
+version=8.0-rlx
+release=1
+source="$name-$version.tar.gz::https://github.com/itsManjeet/readline/archive/$version.tar.gz"
+
+build() {
+	cd $name-$version
+	
+	[[ $BOOTSTRAP ]] && {
+		_extra="--host=$TARGET --build=$HOST"
+	}
+	sed -i '/MV.*old/d' Makefile.in
+	sed -i '/{OLDSUFF}/c:' support/shlib-install
+
+	./configure			\
+		    --prefix=/usr    	\
+	            --disable-static	\
+	            --docdir=/usr/share/$name/
+	
+	[[ -d /tools/lib ]] &&  TLDIR="-L/tools/lib"
+	
+	make SHLIB_LIBS="$TLDIR -lncursesw"
+	make SHLIB_LIBS="$TLDIR -lncurses" DESTDIR=$pkg install
+}

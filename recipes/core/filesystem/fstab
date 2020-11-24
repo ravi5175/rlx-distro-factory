@@ -1,0 +1,16 @@
+#
+# /etc/fstab: static file system information
+# System use this file to determine the default mount point locations for
+# specified filesystems
+# use lsblk to determine filesytem type, uuid and other information
+
+
+# filesystem	mount-point		type	options		dump	fsck-order
+# /dev/[xxx]		/			[ff]	defaults	 1			1
+
+
+
+# eof
+
+
+

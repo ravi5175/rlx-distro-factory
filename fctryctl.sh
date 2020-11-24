@@ -1,129 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
-set +h
-umask 022
-export RLX=$(pwd)/rlx
-export LC_ALL=POSIX
-export PATH=${RLX}/cross-tools/bin:/bin
-export RLX_ARCH=${CARCH:-x86_64}
-export RLX_HOST="$(echo ${MACHTYPE} | sed -e 's/-[^-]*/-cross/')"
-export RLX_SRC_DIR=$(pwd)/cache/src/
-export RLX_BUILD_DIR=$(pwd)/cache/work/
-export RLX_CACHE=$(pwd)/cache
+. config.sh
 
-export MAKEFLAGS=-j8
+echo "
+       .__                      
+_______|  | ___  ___   ____  ______
+\_  __ \  | \  \/  /  /  _ \/  ___/
+ |  | \/  |__>    <  (  <_> )___ \ 
+ |__|  |____/__/\_ \  \____/____  >
+                  \/            \/ 
+  welcome to rlxos distro factory
+-----------------------------------------
 
-KERNEL_VERSION="5.8.13"
-BINUTILS_VERSION="2.35"
-GCC_VERSION="10.2.0"
+Target System: $RLX_TGT
+Architecture : $RLX_ARCH
+Build dir    : $RLX
+"
 
-MPFR_VERSION="4.1.0"
-MPC_VERSION="1.1.0"
-GMP_VERSION="6.2.0"
-MUSL_VERSION="1.2.1"
-
-case "$RLX_ARCH" in
-	x86_64)
-		export RLX_TGT="x86_64-linux-musl"
-		;;
-		
-	i686)
-		export RLX_TGT="i686-linux-musl"
-		;;
-		
-	aarch64)
-		export RLX_TGT="aarch64-linux-musl"
-		;;
-		
-	armv7hl)
-		export RLX_TGT="arm-linux-musleabihf"
-		;;
-		
-	armv6hl)
-		export RLX_TGT="arm-linux-musleabi"
-		;;
-		
-	ppc64le)
-		export RLX_TGT="powerpc64le-linux-musl"
-		;;
-		
-	ppc64)
-		export RLX_TGT="powerpc64-linux-musl"
-		;;
-		
-	s390x)
-		export RLX_TGT="s390x-linux-musl"
-		;;
-		
-	riscv64)
-		export RLX_TGT="riscv64-linux-musl"
-		;;
-	*)
-		echo "unsupport architecture $RLX_ARCH"
-		exit 1
-esac
-
-unset CFLAGS
-
-INFO_MESG() {
-    local WHITE_COLOR="\033[1;37m"
-    local CYAN_COLOR="\033[1;36m"
-    local NO_COLOR="\033[0m"
-
-    echo -e "${WHITE_COLOR}[${CYAN_COLOR}Info${WHITE_COLOR}]:${NO_COLOR} $@"
-}
-
-ERR_MESG() {
-    local WHITE_COLOR="\033[1;37m"
-    local RED_COLOR="\033[1;31m"
-    local NO_COLOR="\033[0m"
-    echo -e "${WHITE_COLOR}[${RED_COLOR}Error${WHITE_COLOR}]:${RED_COLOR} $@${NO_COLOR}"
-}
-
-SUCCESS_MESG() {
-    local WHITE_COLOR="\033[1;37m"
-    local GREEN_COLOR="\033[1;32m"
-    local NO_COLOR="\033[0m"
-    echo -e "${WHITE_COLOR}[${GREEN_COLOR}Success${WHITE_COLOR}]:${GREEN_COLOR} $@${NO_COLOR}"
-}
-
-RLX_DOWNLOAD() {
-    FILENAME=$(basename $1)
-    [[ -z "$2" ]] || FILENAME="$2"
-    URL=$1
-    [[ -f $RLX_SRC_DIR/$FILENAME ]] || {
-        [[ -f $RLX_SRC_DIR/$FILENAME.part ]] && RESUME="-c"
-        INFO_MESG "Downloading $FILENAME from $URL"
-        wget $RESUME --passive-ftp --tries=3 --waitretry=3 --output-document=$RLX_SRC_DIR/$FILENAME.part $URL &&    \
-            mv $RLX_SRC_DIR/$FILENAME{.part,}
-    }
-}
-
-
-RLX_EXTRACT() {
-    [[ -d $RLX_BUILD_DIR ]] && rm -rf $RLX_BUILD_DIR
-
-    mkdir -p $RLX_BUILD_DIR
-
-    INFO_MESG "Extracting $1 -> $RLX_BUILD_DIR"
-    tar -xf $RLX_SRC_DIR/$1 -C $RLX_BUILD_DIR/ || {
-        ERR_MESG "Failed to extract $1"
-        exit 1
-    }
-}
-
-
-[[ -d ${RLX}/cross-tools/${RLX_TGT} ]] || {
-	echo "preparing...."
-	mkdir -p ${RLX}/cross-tools/${RLX_TGT}
-	ln -sfv . ${RLX}/cross-tools/${RLX_TGT}/usr
-}
-
-
-echo "verifying toolchain...."
+_x=0
+echo -en "verifying toolchain\t\t"
 for i in toolchain/*.sh ; do
 	_ttfile=${RLX_CACHE}/$(basename $i)
 	[[ -f $_ttfile ]] && continue
+	[[ $_x = 0 ]] && {
+		_x=1
+		echo -e "   [missing]\nCompiling toolchain"
+	}
 	echo "compiling $(basename $i)"
 	(. $i) || {
 		echo ": error : failed to compile $i"
@@ -132,5 +34,67 @@ for i in toolchain/*.sh ; do
 	
 	touch $_ttfile
 done
+unset _x
+echo "   [✓]"
 
+echo -en "generating appctl configs\t"
+echo "
+set +h
+umask 022
+export RLX=$(pwd)/rlx.$RLX_ARCH
+export LC_ALL=$LC_ALL
+export PATH=$PATH
+export RLX_ARCH=$RLX_ARCH
+export RLX_HOST=$RLX_HOST
+export MAKEFLAGS=-j8
+export RLX_TARGET=$RLX_TGT
+export CFLAGS=\"-O2 -march=x86-64 -pipe\"
+export CXXFLAGS=\$CFLAGS
 
+export BOOTSTRAP=1
+
+export CC=\"$RLX_TGT-gcc --sysroot=$RLX/rootfs\"
+export CXX=\"$RLX_TGT-g++ --sysroot=$RLX/rootfs\"
+export LD=\"$RLX_TGT-ld --sysroot=$RLX/rootfs\"
+export AR=\"$RLX_TGT-ar\"
+export AS=\"$RLX_TGT-as\"
+export RANLIB=\"$RLX_TGT-ranlib\"
+export STRIP=\"$RLX_TGT-strip\"
+
+export TARGET=$RLX_TGT
+export HOST=$RLX_HOST
+" > $(pwd)/$RLX_ARCH.appctl.specs
+
+echo "
+[dir]
+recipes = $(pwd)/recipes
+cache = $(pwd)/cache
+pkg = $(pwd)/pkgs.$RLX_ARCH
+data = $(pwd)/rlx.$RLX_ARCH/var/lib/app/index
+roots = $(pwd)/rlx.$RLX_ARCH
+
+[modules]
+rlxpkg = /usr/libexec/appctl/rlxpkg
+
+[default]
+repo = core toolchain
+" > $(pwd)/$RLX_ARCH.appctl.conf
+
+echo "   [✓]"
+
+for i in $(cat pkgs.list) ; do
+	[[ -f rlx.$RLX_ARCH/var/lib/app/index/$i/info ]] && continue
+	echo "building $i"
+	[[ ! -f $(pwd)/$RLX_ARCH.appctl.specs ]] && {
+		echo "specifications file missing"
+		exit 1
+	}
+	APPCTL_SPECS=$(pwd)/$RLX_ARCH.appctl.specs	\
+	appctl install $i							\
+	config=$(pwd)/$RLX_ARCH.appctl.conf
+	[[  $? != 0 ]] && {
+		echo "failed to build $i"
+		exit 1
+	}
+
+done

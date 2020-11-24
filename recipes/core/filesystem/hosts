@@ -1,0 +1,8 @@
+#
+# /etc/hosts : network card version
+#
+
+# <ip-address>	hostname	aliases
+
+127.0.0.1		localhost
+::1				localhost

@@ -1,0 +1,21 @@
+#
+# /etc/profile: bash shell profile
+#
+
+export LANG=en_IN.UTF-8
+export PATH=/usr/bin
+
+if [[ "$(id -u)" = 0 ]] ; then
+	export PATH=/usr/sbin:$PATH
+	unset HISTFILE
+fi
+
+umask 022
+
+export HISTSIZE=1000
+export HISTIGNORE="&:[bf]g:exit"
+for _s in /etc/profile.d/*.sh ; do
+	. $_s
+	unset _s
+done
+

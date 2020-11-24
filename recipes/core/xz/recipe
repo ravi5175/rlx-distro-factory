@@ -18,6 +18,6 @@ build() {
 		    --prefix=/usr 				\
 	        --disable-static 			\
 	        $_extra
-	make
+	make -j1
 	make DESTDIR=$pkg install
 }

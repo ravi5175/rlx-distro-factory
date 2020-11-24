@@ -1,0 +1,46 @@
+# Description: rlxos root filesystem hierarchy
+# URL: https://rlxos.dev
+# Maintainer: itsmanjeet@rlxos.dev
+# Category: system
+# License: GPL3
+
+SKIP_STRIP=1
+
+name=filesystem
+version=0.1.0
+release=1
+source=(fstab group hostname hosts issue os-release passwd profile shells)
+build() {
+	
+	install -vdm755 $pkg/usr/{bin,sbin,etc,lib,libexec,share}
+	install -vdm755 $pkg/opt/.{bin,lib,share}
+	
+	install -vdm755 $pkg/etc
+	install -vdm755 $pkg/dev
+	install -vdm555 $pkg/proc
+	install -vdm555 $pkg/sys
+	install -vdm0750 $pkg/root
+	
+	install -vdm1777 $pkg/tmp $pkg/var/tmp
+	
+	for d in {1..8} ; do
+		install -vdm644 $pkg/usr/share/man/man$d
+	done
+	install -vdm755 $pkg/var
+	install -vdm755 $pkg/var/{log,spool,opt,cache}
+	
+	ln -s ../run $pkg/var/run
+	ln -s ../run/lock $pkg/var/lock
+	
+	ln -s /proc/self/mounts $pkg/etc/mtab
+	
+	touch $pkg/var/log/{btmp,lastlog,faillog,wtmp}
+	
+	# chgrp 13 $pkg/var/log/lastlog
+	# chmod 664 $pkg/var/log/lastlog
+	# chmod 600 $pkg/var/log/btmp
+	
+	for i in ${source[@]} ; do
+		install -vDm644 $src/$i -t $pkg/etc
+	done
+}

@@ -1,0 +1,7 @@
+musl
+zlib
+bzip2
+xz
+file
+ncurses
+readline

@@ -1,0 +1,42 @@
+# Description: Libraries for terminal-independent handling of character screens
+# URL: https://invisible-island.net/ncurses/ncurses.html
+
+name=ncurses
+version=6.2
+release=1
+source="https://ftp.gnu.org/gnu//$name/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	[[ $BOOTSTRAP ]] && {
+		_extra="--host=$TARGET --build=$HOST"
+	}
+	
+	sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
+
+	./configure 	 						\
+			--prefix=/usr 					\
+			--libdir=/usr/lib					\
+			--mandir=/usr/share/man 				\
+			--with-pkg-config-libdir=/usr/lib/pkgconfig 	\
+			--with-shared 					\
+			--without-debug 					\
+			--without-normal 					\
+			--enable-pc-files 					\
+			--enable-widec						\
+			$_extra
+	make
+	make DESTDIR=$pkg install
+
+	for lib in ncurses form panel menu ; do
+	    echo "INPUT(-l${lib}w)" > $pkg/usr/lib/lib${lib}.so
+	    ln -sfv ${lib}w.pc        $pkg/usr/lib/pkgconfig/${lib}.pc
+	done
+
+	echo "INPUT(-lncursesw)" > $pkg/usr/lib/libcursesw.so
+	ln -sfv libncurses.so      $pkg/usr/lib/libcurses.so
+	
+	mkdir -pv $pkg/usr/share/doc/$name/
+	cp doc/* $pkg/usr/share/doc/$name -rv
+}
