@@ -1,0 +1,101 @@
+# Description: The GNU compiler collection, which includes the C and C++ compilers
+# URL: http://gcc.gnu.org/
+# Depends on: mpc mpfr gmp zlib
+
+name=gcc
+version=10.2.0
+release=1
+source="https://ftp.gnu.org/gnu/$name/$name-$version/$name-$version.tar.xz
+	c89 c99
+	getent.c getent.1 getconf.c getconf.1 iconv.c"
+
+build() {
+
+	cd $name-$version
+	
+	case $(uname -m) in
+		x86_64)
+			export TRUPLE="x86_64-linux-musl"
+			;;
+		i686)
+			export TRUPLE="i686-linux-musl"
+			;;
+		armv7l)
+			export TRUPLE="armv7l-linux-musleabihf"
+			;;
+		armv6l)
+			export TRUPLE="armv6l-linux-musleabihf"
+			;;
+		aarch64)
+			export TRUPLE="aarch64-linux-musleabihf"
+			export EXTRA_CONFIG=" --with-arch=armv8-a --with-abi=lp64"
+			sed -i '/m64=/s/lib64/lib/' gcc/config/aarch64/t-aarch64-linux
+			;;
+	esac
+
+	
+	case $(uname -m) in
+		x86_64)
+			sed -e '/m64=/s/lib64/lib/' \
+			    -i.orig gcc/config/i386/t-linux64
+			;;
+		aarch64)
+			sed -e '/mabi.lp64=/s/lib64/lib/' \
+		            -i.orig gcc/config/aarch64/t-aarch64-linux
+			;;
+	esac
+	
+	sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" {gcc,libiberty}/configure
+	
+	mkdir -v build
+	cd       build
+
+	SED=sed libat_cv_have_ifunc=no			\
+	../configure 	 				\
+		     --prefix=/usr 			\
+		     --build="${TRUPLE}"		\
+		     --libexecdir=/usr/lib 		\
+	             --enable-languages=c,c++ 		\
+	             --disable-bootstrap 		\
+		     --disable-libmpx 			\
+	             --with-system-zlib 		\
+		     --disable-nls 			\
+		     --disable-multilib 		\
+		     --disable-libsanitizer $EXTRA_CONFIG
+	make
+
+	
+	make DESTDIR=$pkg install
+	
+	cc -fpie ../../getent.c  -o $pkg/usr/bin/getent
+	cc -fpie ../../getconf.c -o $pkg/usr/bin/getconf
+	cc -fpie ../../iconv.c   -o $pkg/usr/bin/iconv.c
+	
+	install -vDm644 ../../get{ent,conf}.1 -t $pkg/usr/share/man/man1/
+	
+	ln -sv ../lib/cpp $pkg/usr/lib/
+	
+	ln -sv gcc $pkg/usr/bin/cc
+	
+	install -vdm755 $pkg/usr/lib/bfd-plugins
+	ln -svf ../../lib/gcc/$(gcc -dumpmachine)/10.2.0/libto_plugin.so \
+		$pkg/usr/lib/bfd-plugins/
+	
+	mkdir -pv $pkg/usr/share/gdb/auto-load/usr/lib
+	mv -v $pkg/usr/lib/*gdb.py $pkg/usr/share/gdb/auto-load/usr/lib
+	
+	test | tee /var/log/$name-check.log
+
+	return 0	
+}
+
+test() {
+	echo 'int main(){}' > dummy.c
+	cc dummy.c -v -Wl,--verbose &> dummy.log
+	readelf -l a.out | grep ': /lib'
+	grep  'crt[1in].o succeeded' dummy.log
+	grep -B2 '^ /usr/lib/gcc' dummy.log
+	grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+	rm -v dummy.c a.out dummy.log
+}
+	

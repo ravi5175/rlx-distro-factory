@@ -1,0 +1,16 @@
+# Description: Power manager for the Xfce desktop
+# URL: http://www.xfce.org/
+# Depends on: libxfce4util glib libxrandr libsm libice libx11 xfce4-panel libxfce4ui xfconf gtk3 pango harfbuzz atk cairo gdk-pixbuf upower libnotify libxext
+
+name=xfce4-power-manager
+version=1.7.0
+release=1
+source="http://archive.xfce.org/src/xfce/xfce4-power-manager/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --sysconfdir=/etc --disable-nls
+	make
+	make DESTDIR=$pkg install
+}

@@ -1,0 +1,15 @@
+# Description: standalone library to implementation GNU libc's obstack
+# URL: https://github.com/pullmoll/musl-obstack
+
+name=musl-obstack
+version=1.1
+release=1
+source="$name-$version.tar.gz::https://github.com/pullmoll/musl-obstack/archive/v$version.tar.gz"
+
+build() {
+	cd $name-$version
+	./bootstrap.sh
+	./configure --prefix=/usr
+	make
+	make install DESTDIR=$pkg
+}

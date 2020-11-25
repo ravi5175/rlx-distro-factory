@@ -1,0 +1,25 @@
+# Description: A set of plug-ins considered by the GStreamer developers to have good quality and correct functionality, but distributing them might pose problems
+# URL: https://gstreamer.freedesktop.org/
+# Depends on: gstreamer glib gst-plugins-base libdvdread x264
+
+name=gst-plugins-ugly
+version=1.18.0
+release=2
+source="https://gstreamer.freedesktop.org/src/$name/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	mkdir build
+        cd build
+
+        meson \
+		--prefix=/usr \
+		--libexecdir=lib \
+		-Dgst_debug=false \
+		-Dgtk_doc=disabled \
+		-Dnls=disabled \
+		-Dpackage-name="GStreamer Ugly Plugins $version (rlxos)"
+	ninja
+	DESTDIR=$pkg ninja install
+}

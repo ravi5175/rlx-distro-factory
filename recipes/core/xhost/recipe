@@ -1,0 +1,20 @@
+# Description: Server access control program for X
+# URL: http://xorg.freedesktop.org/
+# Depends on: libxmu libx11 
+
+name=xhost
+version=1.0.8
+release=1
+source="http://ftp.x.org/pub/individual/app/xhost-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}

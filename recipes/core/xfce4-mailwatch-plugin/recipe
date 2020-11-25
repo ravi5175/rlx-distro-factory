@@ -1,0 +1,22 @@
+# Description: Multi-protocol, multi-mailbox mail watcher for the Xfce4 panel
+# URL: https://goodies.xfce.org/projects/panel-plugins/xfce4-mailwatch-plugin
+# Depends on: glib xfce4-panel libxfce4ui gnutls libgcrypt libgpg-error exo gtk2 pango atk cairo gdk-pixbuf harfbuzz fontconfig freetype2 libxfce4util
+
+name=xfce4-mailwatch-plugin
+version=1.2.0
+release=1
+source="http://archive.xfce.org/src/panel-plugins/xfce4-mailwatch-plugin/${version%.*}/xfce4-mailwatch-plugin-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libexecdir=/usr/lib \
+		--localstatedir=/var \
+		--disable-static \
+		--disable-debug \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

@@ -1,0 +1,33 @@
+# Description: utilities for handling the ext2, ext3 and ext4 file system
+# URL: http://e2fsprogs.sourceforge.net/
+# Depends on: util-linux
+
+name=e2fsprogs
+version=1.45.6
+release=1
+source="https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v$version/e2fsprogs-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	mkdir -v build
+	cd build
+	
+	e2fsprogs_cv_struct_st_flags=no		\
+	../configure 				\
+		     --prefix=/usr           	\
+	             --sbindir=/usr/sbin      	\
+	             --with-root-prefix=""   	\
+	             --enable-elf-shlibs     	\
+	             --disable-libblkid      	\
+	             --disable-libuuid       	\
+	             --disable-uuidd         	\
+	             --disable-fsck
+	make
+	make DESTDIR=$pkg install
+	make DESTDIR=$pkg install-libs
+
+	for i in libcom_err libe2p libext2fs libss; do
+		chmod -v u+w $pkg/usr/lib/${i}.a
+	done
+}

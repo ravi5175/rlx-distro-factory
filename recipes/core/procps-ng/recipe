@@ -1,0 +1,28 @@
+# Description: Programs for monitoring processes
+# URL: https://gitlab.com/procps-ng/procps
+# Depends on: ncurses
+
+name=procps-ng
+version=3.3.16
+release=1
+source="https://sourceforge.net/projects/procps-ng/files/Production/$name-$version.tar.xz"
+
+build() {
+
+	cd $name-$version
+
+	autoreconf -fiv
+	./configure			\
+		    --prefix=/usr	\
+	            --exec-prefix=	\
+	            --libdir=/usr/lib	\
+	            --docdir=/usr/share/doc/$name	\
+	            --disable-static	\
+	            --disable-kill	\
+	            --enable-watch8bit	\
+	            --without-systemd	\
+	            --disable-modern-top
+	make
+	make DESTDIR=$pkg install
+
+}

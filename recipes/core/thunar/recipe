@@ -1,0 +1,20 @@
+# Description: Xfce file manager, a GTK+ 3 GUI to organise the files on your computer
+# URL: http://thunar.xfce.org/
+# Depends on: gobject-introspection glib gtk3 pango harfbuzz atk cairo gdk-pixbuf exo libxfce4util xfconf libsm libice libx11 libexif pcre libxfce4ui xfce4-panel libgudev libnotify
+
+name=thunar
+version=4.15.2
+release=1
+source="http://archive.xfce.org/src/xfce/$name/${version%.*}/thunar-$version.tar.bz2"
+
+build() {
+	cd thunar-$version
+
+	./configure --prefix=/usr \
+	            --sysconfdir=/etc \
+		    --disable-nls
+	make
+	make DESTDIR=$pkg install
+
+	rm -r $pkg/usr/lib/systemd/
+}

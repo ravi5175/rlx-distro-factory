@@ -1,0 +1,21 @@
+# Description: Low-level cryptographic library that is designed to fit easily in many contexts
+# URL: https://www.lysator.liu.se/~nisse/nettle/
+# Depends on: gmp
+
+name=nettle
+version=3.6
+release=1
+source="https://ftp.gnu.org/gnu/$name/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr \
+		    --disable-static
+	make
+	make DESTDIR=$pkg install
+
+	chmod   -v   755 $pkg/usr/lib/libhogweed.so $pkg/usr/lib/libnettle.so
+
+	rm -r $pkg/usr/share
+}

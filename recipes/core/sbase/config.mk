@@ -1,8 +1,16 @@
-VERSION = 0.1.0
+# sbase version
+VERSION = 0.0
 
-PREFIX = /usr
+# paths
+PREFIX = /usr/
 MANPREFIX = $(PREFIX)/share/man
 
-CPPFLAGS := $(CFLAGS) -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64
-CFLAGS   := $(CFLAGS) -std=c99 -Wall -pedantic
-LDFLAGS  := $(CFLAGS) -s
+CC = cc
+AR = ar
+RANLIB = ranlib
+
+# for NetBSD add -D_NETBSD_SOURCE
+# -lrt might be needed on some systems
+CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64
+CFLAGS   = -std=c99 -Wall -pedantic -O3 -march=x86-64 -pipe
+LDFLAGS  = -s

@@ -1,0 +1,14 @@
+# Description: Library of C routines for reading and writing files containing sampled audio data
+# Depends on: flac libogg libvorbis alsa-lib sqlite
+
+name=libsndfile
+version=1.0.28
+release=1
+source="http://www.mega-nerd.com/libsndfile/files/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+	./configure --prefix=/usr --disable-static
+	make
+	make DESTDIR=$pkg install
+}

@@ -1,0 +1,30 @@
+# Description: Next generation of the python high-level scripting language
+# Depends on: expat zlib readline libffi gdbm ncurses libressl xz bzip2 util-linux
+
+name=python
+version=3.9.0
+release=1
+source="https://www.python.org/ftp/python/$version/Python-$version.tar.xz"
+
+build() {
+	cd Python-$version
+	
+	rm -r Modules/expat
+	rm -r Modules/_ctypes/{darwin,libffi}*
+	
+	sed -i 's@$($CC --print-multiarch 2>/dev/null)@$($CC --print-multiarch 2>/dev/null | sed "s/musl/gnu/g")@' configure
+	CXX="/bin/x86_64-linux-musl-g++"				\
+	./configure --prefix=/usr       	\
+	            --enable-shared     	\
+	            --with-system-expat 	\
+	            --with-system-ffi   	\
+		    --with-ensurepip=yes	\
+		    --enable-ipv6		\
+		    --with-threads		\
+		    --enable-loadable-sqlite-extension	\
+		    --enable-optimizations
+	make
+	make DESTDIR=$pkg install
+	
+	chmod -v 755 $pkg/usr/lib/libpython* || true
+}

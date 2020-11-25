@@ -1,0 +1,28 @@
+# Description: Programs for basic networking
+# URL: https://www.gnu.org/software/inetutils/
+# Depends on: ncurses
+
+name=inetutils
+version=1.9.4
+release=1
+source="https://ftp.gnu.org/gnu/$name/$name-$version.tar.xz
+	fix-build.patch"
+
+build() {
+	cd $name-$version
+
+	patch -Np1 -i ../fix-build.patch
+
+	./configure 			\
+		--prefix=/usr 		\
+		--localstatedir=/var 	\
+		--disable-logger 	\
+		--disable-whois 	\
+		--disable-rcp 		\
+		--disable-rexec 	\
+		--disable-rlogin 	\
+		--disable-rsh 		\
+		--disable-servers
+	make
+	make DESTDIR=$pkg install
+}

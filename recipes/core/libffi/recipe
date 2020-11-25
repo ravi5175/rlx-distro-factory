@@ -1,0 +1,57 @@
+# Description: Portable foreign function interface library
+# URL: https://sourceware.org/libffi/
+
+name=libffi
+version=3.3
+release=1
+source="ftp://sourceware.org/pub/$name/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+  	sed -e '/^includesdir/ s/$(libdir).*$/$(includedir)/' \
+	    -i include/Makefile.in
+
+	sed -e '/^includedir/ s/=.*$/=@includedir@/' \
+	    -e 's/^Cflags: -I${includedir}/Cflags:/' \
+	    -i libffi.pc.in
+	   
+	case $(uname -m) in
+		x86_64)
+			export ARCH="x86-64"
+			export TRUPLE="x86_64-linux-musl"
+			;;
+		
+		i686)
+			export ARCH="i686"
+			export TRUPLE="i686-linux-musl"
+			;;
+		
+		armv7l)
+			export ARCH="armv7-a"
+			export TRUPLE="armv7l-linux-musleabihf"
+			;;
+		
+		armv6l)
+			export ARCH="armv6"
+			export TRUPLE="armv6l-linux-musleabibf"
+			;;
+		
+		aarch64)
+			export ARCH="armv8-a"
+			export TRUPLE="aarch64-linux-musleabihf"
+			;;
+	esac
+			
+	./configure				\
+		--prefix=/usr			\
+		--disable-static		\
+		--with-gcc-arch=$ARCH		\
+		--includedir=/usr/include	\
+		--with-pic			\
+		--build=$TRUPLE
+
+	unset ARCH TRUPLE
+	make
+	make DESTDIR=$pkg install
+}

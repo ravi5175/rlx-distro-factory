@@ -1,0 +1,16 @@
+# Description: Modular initramfs image creation utility
+
+name=mkinitramfs
+version=20200118
+release=2
+backup="etc/mkinitramfs.conf"
+source="https://github.com/venomlinux/mkinitramfs/archive/$version/$name-$version.tar.gz
+	https://github.com/venomlinux/mkinitramfs/commit/2b323335ff368f0bbd40ed7cd907648b2e35bcc1.patch
+	mkinitramfs.conf"
+
+build() {
+	cd $name-$version
+	patch -Np1 -i $src/2b323335ff368f0bbd40ed7cd907648b2e35bcc1.patch
+	DESTDIR=$pkg ./INSTALL.sh
+	install -m644 $src/mkinitramfs.conf $pkg/etc/
+}

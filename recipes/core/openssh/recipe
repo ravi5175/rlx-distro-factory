@@ -1,0 +1,31 @@
+# Description: Free version of the SSH connectivity tools
+# Depends on: libressl zlib
+
+name=openssh
+version=8.4p1
+release=1
+source="https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/$name-$version.tar.gz
+	run"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr                     \
+	            --sysconfdir=/etc/ssh             \
+		    --libexecdir=/usr/lib/$name       \
+	            --with-md5-passwords              \
+	            --with-privsep-path=/var/lib/sshd
+	make
+	make DESTDIR=$pkg install
+
+	install -v -m755    contrib/ssh-copy-id $pkg/usr/bin
+	install -v -m644    contrib/ssh-copy-id.1 \
+	                    $pkg/usr/share/man/man1
+
+	sed '/^#ChallengeResponseAuthentication yes$/c ChallengeResponseAuthentication no' \
+	    -i $pkg/etc/ssh/sshd_config
+
+	# runit service
+        install -Dm755 $src/run $pkg/etc/sv/sshd/run
+        ln -s /run/runit/supervise.sshd $pkg/etc/sv/sshd/supervise
+}

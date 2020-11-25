@@ -1,0 +1,22 @@
+# Description: Create and extract archives in Thunar
+# URL: http://goodies.xfce.org/projects/thunar-plugins/thunar-archive-plugin
+# Depends on: thunar exo gtk3 pango harfbuzz atk cairo gdk-pixbuf glib libxfce4util
+
+name=thunar-archive-plugin
+version=0.4.0
+release=1
+source="http://archive.xfce.org/src/thunar-plugins/$name/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libexecdir=/usr/lib/xfce4 \
+		--localstatedir=/var \
+		--disable-static \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

@@ -1,0 +1,22 @@
+# Description: Notes plugin for xfce4 panel
+# URL: https://goodies.xfce.org/projects/panel-plugins/xfce4-notes-plugin
+# Depends on: libsm libice libx11 libxfce4util xfconf libunique gtk2 pango atk cairo gdk-pixbuf glib harfbuzz fontconfig freetype2 libxfce4ui xfce4-panel
+
+name=xfce4-notes-plugin
+version=1.8.1
+release=1
+source="http://archive.xfce.org/src/panel-plugins/xfce4-notes-plugin/${version%.*}/xfce4-notes-plugin-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libexecdir=/usr/lib \
+		--localstatedir=/var \
+		--disable-static \
+		--disable-debug \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

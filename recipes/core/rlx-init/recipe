@@ -1,0 +1,14 @@
+# Description: rlx initial ramdisk managment tool
+# URL: https://github.com/rlxos/rlx-init
+# Depends on: wget
+
+name=rlx-init
+version=0.1.0
+release=1
+source="$name-$version.tar.gz::https://github.com/rlxos/rlx-init/archive/$version.tar.gz"
+
+build() {
+	cd $name-$version
+	
+	DESTDIR=$pkg bash install.sh
+}

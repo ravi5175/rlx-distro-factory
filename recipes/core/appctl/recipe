@@ -1,0 +1,35 @@
+# Description: rlxos package manager tools collection
+# URL: https://github.com/rlxos/appctl
+# License: GPL3
+# Depends on: project librlx curl libressl
+
+name=appctl
+version=0.1.1
+release=2
+source="$name-$version.tar.gz::https://github.com/rlxos/appctl/archive/${version}.tar.gz
+	appctl.conf"
+
+build() {
+	cd $name-$version
+	
+	sed -i 's|compiler.|compile.|g' project.conf
+        sed -i 's|cflags = -fPIC -shared -ggdb|cflags = -fPIC -shared -ggdb -fpermissive|g' project.conf
+
+	for i in libapp rlxpkg appctl ; do
+		project build $i
+	done
+	
+	install -vDm644 build/libapp.so $pkg/usr/lib/libapp.so.$version
+	ln -sv libapp.so.$version $pkg/usr/lib/libapp.so
+	
+	install -vDm644 build/rlxpkg -t $pkg/usr/libexec/appctl/
+	cp src/rlxpkg/*.sh -t $pkg/usr/libexec/appctl
+	install -vDm755 build/appctl -t $pkg/usr/bin/
+	ln -sv appctl $pkg/usr/bin/app
+	
+	install -vDm644 $src/appctl.conf -t $pkg/usr/etc/
+	
+	install -vdm755 $pkg/var/cache/appctl/{work,src,pkg}
+	install -vdm755 $pkg/var/lib/app/index/
+
+}

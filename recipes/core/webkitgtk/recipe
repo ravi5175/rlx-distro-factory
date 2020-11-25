@@ -1,0 +1,35 @@
+# Description: Portable web rendering engine WebKit to the GTK+ 3 and GTK+ 2 platforms
+# Depends on: gobject-introspection gtk3 pango harfbuzz atk cairo gdk-pixbuf glib libwpe wpebackend-fdo libglvnd libnotify sqlite libxml2 libxslt icu harfbuzz-icu fontconfig freetype2 libgcrypt gst-plugins-base gstreamer libjpeg-turbo libpng openjpeg2 libwebp libsoup enchant libseccomp libsecret libtasn1 libx11 libxcomposite libxdamage libxrender libxt zlib wayland ruby bubblewrap xdg-dbus-proxy
+
+name=webkitgtk
+version=2.30.2
+release=1
+source="https://webkitgtk.org/releases/$name-$version.tar.xz
+	fix-fast-memory-disabled.patch
+	musl-fixes.patch"
+
+build() {
+	cd $name-$version
+
+	export CXXFLAGS="$CXXFLAGS -g1"
+
+	patch -Np1 -i $src/fix-fast-memory-disabled.patch
+	patch -Np1 -i $src/musl-fixes.patch
+	
+	mkdir -vp build
+	cd        build
+	
+	cmake -DCMAKE_BUILD_TYPE=Release \
+	      -DCMAKE_INSTALL_PREFIX=/usr \
+	      -DCMAKE_SKIP_RPATH=ON \
+	      -DPORT=GTK \
+	      -DLIB_INSTALL_DIR=/usr/lib \
+	      -DCMAKE_INSTALL_LIBEXECDIR:PATH=/usr/lib \
+	      -DUSE_LIBHYPHEN=OFF \
+	      -DENABLE_MINIBROWSER=ON \
+	      -DUSE_WOFF2=OFF \
+	      -DENABLE_GEOLOCATION=OFF \
+	      -Wno-dev -G Ninja ..
+	ninja
+	DESTDIR=$pkg ninja install
+}

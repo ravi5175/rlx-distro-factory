@@ -1,0 +1,15 @@
+# Description: GTK+ 2 GUI frontend for Libisoburn
+# Depends on: libburn libisofs libxfce4ui exo libxfce4util glib gtk3 pango harfbuzz atk cairo gdk-pixbuf gst-plugins-base gstreamer libgudev
+
+name=xfburn
+version=0.6.2
+release=1
+source="http://archive.xfce.org/src/apps/$name/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --disable-static --disable-nls
+	make
+	make DESTDIR=$pkg install
+}

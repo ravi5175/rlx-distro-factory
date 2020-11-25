@@ -1,20 +1,20 @@
-# Description: collection of unix tools that are portable across unix-systems
-# URL: https://git.suckless.org/sbase/
-# Maintainer: itsmanjeet@rlxos.dev
-# Depends on: musl
-# Category: system
-# License: MIT
+# Description: suckless core-utils
+# URL: https://git.suckless.org/sbase
 
 name=sbase
-version=0.1.0
+version=0.1.0-rlx
 release=1
-source="$name-$version.tar.gz::https://github.com/releax/sbase/archive/$version.tar.gz
-		config.mk"
+source="$name-$version.tar.gz::https://github.com/rlxos/sbase/archive/$version.tar.gz
+       config.mk"
 
 build() {
 	cd $name-$version
 	
 	cp $src/config.mk .
+	PREFIX=/usr make
 	
 	make install DESTDIR=$pkg
+	
+	rm $pkg/usr/bin/{tftp,hostname,strings}
+	rm $pkg/usr/share/man/man1/{tftp,hostname,strings}.1
 }

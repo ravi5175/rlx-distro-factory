@@ -1,0 +1,47 @@
+# Description: FREE version of the SSL/TLS protocol forked from OpenSSL
+# URL: http://www.libressl.org/
+
+name=libressl
+version=3.2.2
+release=1
+source="https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/$name-$version.tar.gz
+	cert-update"
+
+build() {
+	case $(uname -m) in
+		x86_64)
+			export EXTRA_CONFIG=""
+			export TRUPLE="x86_64-linux-musl"
+			;;
+		i686)
+			export EXTRA_CONFIG="--disable-hardening"
+			export TRUPLE="i686-linux-musl"
+			;;
+		armv7l)
+			export TRUPLE="armv7l-linux-musleabihf"
+			;;
+		armv6l)
+			export TRUPLE="armv6l-linux-musleabihf"
+			;;
+		aarch64)
+			export TRUPLE="aarch64-linux-musleabihf"
+			;;
+	esac
+	
+	cd $name-$version
+
+	autoreconf -fi
+	CFLAGS="-L/usr/lib $CFLAGS"	\
+	./configure 			\
+		--build=$TRUPLE		\
+		--host=$TRUPLE		\
+		--prefix=/usr 		\
+		--sysconfdir=/etc 	\
+		--with-openssldir=/etc/ssl	\
+		$EXTRA_CONFIG
+	unset EXTRA_CONFIG TRUPLE
+	make
+	make DESTDIR=$pkg install
+
+	install -m755 $src/cert-update $pkg/usr/bin/cert-update
+}

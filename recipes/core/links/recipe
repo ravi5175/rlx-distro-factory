@@ -1,0 +1,20 @@
+# Description: Text and graphics mode WWW browser
+# URL: http://links.twibright.com/
+# Depends on: xz bzip2 zlib libressl gpm
+
+name=links
+version=2.21
+release=1
+source="http://links.twibright.com/download/$name-$version.tar.bz2"
+
+build() {
+	if [ "$BOOTSTRAP" ]; then
+		flags="--host=$TARGET --build=$HOST"
+	fi
+
+	cd $name-$version
+
+	./configure $flags --prefix=/usr --mandir=/usr/share/man
+	make
+	make DESTDIR=$pkg install
+}

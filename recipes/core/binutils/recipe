@@ -1,0 +1,46 @@
+# Description: A linker, an assembler, and other tools for handling object files
+# URL: https://www.gnu.org/software/binutils/
+# Depends on: zlib
+
+name=binutils
+version=2.35.1
+release=1
+source="https://ftp.gnu.org/gnu/binutils/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+	
+	case $(uname -m) in
+		x86_64)
+			export EXTRA_CONFIG=" --enable-targets=x86_64-pep"
+			;;
+			
+		i686)
+			export EXTRA_CONFIG=" --enable-64-bit-bfd --enable-targets=x86_64-linux-gnu,x86_64-pep"
+			;;
+	esac
+
+	mkdir -v build
+	cd       build
+
+	../configure --prefix=/usr       \
+             --enable-gold       \
+             --enable-ld=default \
+             --enable-plugins    \
+             --enable-shared     \
+             --disable-werror    \
+             --with-system-zlib  \
+             --enable-relro \
+             --enable-lto \
+             --disable-nls \
+             --enable-deterministic-archives \
+             --enable-threads \
+             --disable-compressed-debug-sections \
+             --with-mmap $EXTRA_CONFIG           \
+             --with-lib-path=/apps/lib:/usr/lib:/lib
+	             
+	make tooldir=/usr
+	make tooldir=/usr DESTDIR=$pkg install
+	
+		
+}

@@ -1,0 +1,20 @@
+# Description: Plugin to switch keyboard layouts for the Xfce4 panel
+# URL: http://goodies.xfce.org/projects/panel-plugins/xfce4-xkb-plugin
+# Depends on: xfce4-panel glib libxfce4ui libxfce4util xfconf libxklavier libwnck3 gtk3 pango harfbuzz atk cairo garcon librsvg gdk-pixbuf
+
+name=xfce4-xkb-plugin
+version=0.8.1
+release=1
+source="http://archive.xfce.org/src/panel-plugins/xfce4-xkb-plugin/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure \
+		--prefix=/usr \
+		--libexecdir=/usr/lib \
+		--disable-debug \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

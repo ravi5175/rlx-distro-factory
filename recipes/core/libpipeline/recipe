@@ -1,0 +1,15 @@
+# Description: A library for manipulating pipelines of subprocesses in a flexible and convenient way
+# URL: http://libpipeline.nongnu.org/
+
+name=libpipeline
+version=1.5.3
+release=1
+source="https://download.savannah.gnu.org/releases/$name/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+	./configure	\
+		--prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

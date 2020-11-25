@@ -1,0 +1,39 @@
+# Description: Pluggable Authentication Modules used to enable the local system administrator to choose how applications authenticate users
+# URL: http://linux-pam.org
+
+name=linux-pam
+version=1.4.0
+release=1
+source="https://github.com/linux-pam/linux-pam/releases/download/v$version/Linux-PAM-$version.tar.xz
+	musl.patch
+	other
+	system-auth"
+
+build() {
+	if [ "$BOOTSTRAP" ]; then
+		flags="--host=$TARGET --build=$HOST"
+	fi
+
+	cd Linux-PAM-$version
+
+	patch -Np1 -i $src/musl.patch
+
+	autoreconf -fi
+ 	./configure \
+	    $flags \
+	    --prefix=/usr                    \
+            --sysconfdir=/etc                \
+            --libdir=/usr/lib                \
+            --sbindir=/usr/sbin		    \
+            --disable-regenerate-docu        \
+	    --disable-nls                    \
+            --enable-securedir=/usr/lib/security
+	make
+	make DESTDIR=$pkg install
+
+	chmod -v 4755 $pkg/usr/sbin/unix_chkpwd
+
+	mkdir -m 755 $pkg/etc/pam.d
+	install -D -m 644 -o root -g root $src/other $pkg/etc/pam.d/other
+	install -D -m 644 -o root -g root $src/system-auth $pkg/etc/pam.d/system-auth
+}

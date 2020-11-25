@@ -1,0 +1,17 @@
+# Description: freedesktop.org backend for WPE WebKit
+# URL: https://wpewebkit.org/
+# Depends on: glib libglvnd wayland libwpe libxkbcommon cmake
+
+name=wpebackend-fdo
+version=1.8.0
+release=1
+source="https://wpewebkit.org/releases/$name-$version.tar.xz"
+
+build() {
+	cmake -H$name-$version -Bbuild \
+	    -DCMAKE_BUILD_TYPE=Plain \
+	    -DCMAKE_INSTALL_PREFIX=/usr \
+	    -DCMAKE_INSTALL_LIBDIR=/usr/lib
+	cmake --build build
+	DESTDIR=$pkg cmake --build build --target install
+}

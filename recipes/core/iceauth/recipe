@@ -1,0 +1,21 @@
+# Description: ICE authority file utility
+# URL: http://xorg.freedesktop.org/
+# Depends on: libice 
+
+name=iceauth
+version=1.0.8
+release=1
+source="http://ftp.x.org/pub/individual/app/iceauth-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}
+

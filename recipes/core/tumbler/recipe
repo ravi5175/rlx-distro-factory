@@ -1,0 +1,16 @@
+# Description: D-Bus thumbnailing service based on the thumbnail management D-Bus specification
+# URL: http://www.xfce.org/
+# Depends on: gdk-pixbuf glib libjpeg-turbo libpng zlib ffmpegthumbnailer freetype2 poppler-glib cairo gst-plugins-base gstreamer curl intltool
+
+name=tumbler
+version=0.3.0
+release=1
+source="http://archive.xfce.org/src/xfce/$name/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --sysconfdir=/etc --disable-nls
+	make
+	make DESTDIR=$pkg install
+}

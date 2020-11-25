@@ -1,0 +1,16 @@
+# Description: Disk reporting library. It only supports a subset of the ATA S.M.A.R.T. functionality
+# URL: http://0pointer.de/blog/projects/being-smart.html
+# Depends on: vala eudev
+
+name=libatasmart
+version=0.19
+release=1
+source="http://0pointer.de/public/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --disable-static
+	make
+	make DESTDIR=$pkg install
+}

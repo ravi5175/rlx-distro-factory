@@ -1,0 +1,23 @@
+# Description: Lightweight web browser
+# Depends on: gobject-introspection sqlite libsoup glib webkitgtk gcr p11-kit libpeas gtk3 pango harfbuzz atk cairo gdk-pixbuf json-glib libarchive intltool
+
+name=midori
+version=9.0
+release=1
+source="https://github.com/midori-browser/core/releases/download/v$version/midori-v$version.tar.gz"
+
+build() {
+	cd $name-v$version
+
+	mkdir build
+	cd    build
+
+	cmake \
+	-DCMAKE_INSTALL_PREFIX=/usr \
+      	-DCMAKE_BUILD_TYPE=Release  \
+	-DCMAKE_C_FLAGS="$CFLAGS -fPIC -w" \
+	-DVALA_CFLAGS="$CFLAGS -fPIC -w" \
+      	..
+	make
+	make DESTDIR=$pkg install
+}

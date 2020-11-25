@@ -1,0 +1,24 @@
+# Description: a C/C++ project management tool
+# Depends on: librlx
+# URL: https://github.com/itsmanjeet/project
+
+name=project
+version=0.1.0
+release=1
+source="$name-$version.tar.gz::https://github.com/itsManjeet/project/archive/$version.tar.gz"
+
+build() {
+	cd $name-$version
+	
+	mkdir -pv build
+	[[ -e /bin/project ]] && {
+		project build
+	} || {
+		g++ -std=c++17 -I include -lrlx -o build/project `pkg-config --libs --cflags openssl` src/*.cc
+	}
+	
+	install -vDm755 build/project -t $pkg/usr/bin/
+}
+	
+
+

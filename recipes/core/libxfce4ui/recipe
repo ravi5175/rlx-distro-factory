@@ -1,0 +1,16 @@
+# Description: GTK+ 2 widgets that are used by other Xfce applications
+# URL: http://www.xfce.org/
+# Depends on: gobject-introspection vala startup-notification gtk3 pango harfbuzz atk cairo gdk-pixbuf libsm libice libx11 libxfce4util xfconf glib gtk2 fontconfig freetype2
+
+name=libxfce4ui
+version=4.14.1
+release=1
+source="http://archive.xfce.org/src/xfce/$name/${version:0:4}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --sysconfdir=/etc
+	make
+	make DESTDIR=$pkg install
+}

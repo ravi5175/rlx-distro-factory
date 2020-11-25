@@ -1,0 +1,20 @@
+# Description: GNU's tool for secure communication and data storage
+# URL: https://www.gnupg.org/
+# Depends on: libgcrypt libgpg-error libksba libassuan npth libusb readline zlib bzip2 gnutls sqlite
+
+name=gnupg
+version=2.2.23
+release=1
+source="https://gnupg.org/ftp/gcrypt/$name/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure \
+		--prefix=/usr \
+		--libexecdir=/usr/lib/$name \
+		--enable-symcryptrun \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

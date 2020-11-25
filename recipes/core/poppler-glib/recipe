@@ -1,0 +1,32 @@
+# Description: glib wrapper for poppler
+# URL: https://poppler.freedesktop.org/
+# Depends on: gobject-introspection poppler cairo freetype2 glib cmake
+
+name=poppler-glib
+version=20.10.0
+release=1
+source="https://poppler.freedesktop.org/poppler-$version.tar.xz"
+
+build() {
+	cd poppler-$version
+
+  	mkdir build
+	cd    build
+	
+	cmake  -DCMAKE_BUILD_TYPE=Release   \
+	       -DCMAKE_INSTALL_PREFIX=/usr  \
+	       -DTESTDATADIR=$PWD/testfiles \
+	       -DENABLE_UNSTABLE_API_ABI_HEADERS=OFF \
+	       -DENABLE_UTILS=OFF \
+	       -DENABLE_CPP=OFF \
+	       -DENABLE_GLIB=ON \
+	       -DENABLE_QT5=OFF \
+	       .. 
+	make
+	make DESTDIR=$pkg install
+
+	rm $pkg/usr/lib/libpoppler.so*
+	rm $pkg/usr/lib/pkgconfig/poppler.pc
+	rm $pkg/usr/lib/pkgconfig/poppler-splash.pc
+	rm $pkg/usr/lib/pkgconfig/poppler-cairo.pc
+}

@@ -1,0 +1,16 @@
+# Description: startup-notification libraries
+# URL: https://www.freedesktop.org/
+# Depends on: xcb-util libx11 libxcb
+
+name=startup-notification
+version=0.12
+release=1
+source="https://www.freedesktop.org/software/$name/releases/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --disable-static
+	make
+	make DESTDIR=$pkg install
+}

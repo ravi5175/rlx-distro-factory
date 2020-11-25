@@ -1,0 +1,22 @@
+# Description: X.org isas-misc fonts
+# Depends on: util-macros mkfontscale font-util bdftopcf
+
+name=font-isas-misc
+version=1.0.3
+release=1
+source="https://www.x.org/archive/individual/font/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+
+	find $pkg -name 'fonts.scale' -delete	
+	find $pkg -name 'fonts.dir' -delete
+}

@@ -1,0 +1,16 @@
+# Description: Library used to make X.509 certificates as well as making the CMS (Cryptographic Message Syntax) easily accessible by other applications
+# URL: ftp://ftp.gnupg.org/gcrypt/alpha/libksba
+# Depends on: libgpg-error
+
+name=libksba
+version=1.4.0
+release=1
+source="ftp://ftp.gnupg.org/gcrypt/$name/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

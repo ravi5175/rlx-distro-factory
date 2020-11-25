@@ -1,0 +1,11 @@
+#!/bin/bash
+
+post() {
+
+cat >> /etc/pam.d/system-session << "EOF"
+# -- elogind --
+session  required    pam_loginuid.so
+session  optional    pam_elogind.so
+# -- end ------
+EOF
+}

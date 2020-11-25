@@ -1,0 +1,18 @@
+# Description: frontend for libraries libburn and libisofs
+# URL: http://libburnia-project.org/
+# Depends on: libisofs libburn zlib acl readline
+
+name=libisoburn
+version=1.5.2
+release=1
+source="http://files.libburnia-project.org/releases/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr              \
+	            --disable-static           \
+	            --enable-pkg-check-modules
+	make
+	make DESTDIR=$pkg install
+}

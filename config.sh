@@ -118,10 +118,12 @@ RLX_EXTRACT() {
 	echo "preparing...."
 	mkdir -p ${RLX}/cross-tools/${RLX_TGT}
 	ln -sfv . ${RLX}/cross-tools/${RLX_TGT}/usr
-	ln -sfv . ${RLX}/rootfs
 	
 	mkdir -p  ${RLX_CACHE}
 	mkdir -p ${RLX_SRC_DIR}
 	mkdir -p ${RLX_BUIL_DIR}
 }
 
+[[ -e ${RLX}/rootfs ]] || {
+	ln -sfv . ${RLX}/rootfs
+}

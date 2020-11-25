@@ -1,0 +1,22 @@
+# Description: Utilities to administer the extended attributes on filesystem objects
+# URL: http://savannah.nongnu.org/projects/attr
+
+name=attr
+version=2.4.48
+release=1
+source="https://download.savannah.gnu.org/releases/$name/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	./configure 			\
+		    --prefix=/usr 	\
+	            --bindir=/usr/bin 	\
+	            --disable-static 	\
+            	    --sysconfdir=/etc 	\
+		    --docdir=/usr/share/doc/$name
+	make
+	make DESTDIR=$pkg install
+
+	chmod -v 755 $pkg/usr/lib/libattr.so
+}

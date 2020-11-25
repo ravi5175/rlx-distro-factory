@@ -1,0 +1,21 @@
+# Description: Kill a client by its X resource
+# URL: http://xorg.freedesktop.org/
+# Depends on: libxmu libx11 
+
+name=xkill
+version=1.0.5
+release=1
+source="http://ftp.x.org/pub/individual/app/xkill-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}
+

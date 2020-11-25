@@ -1,0 +1,16 @@
+# Description: C library that allows cryptography support to be added to a program
+# URL: https://www.gnupg.org/related_software/gpgme/
+# Depends on: libassuan libgpg-error
+
+name=gpgme
+version=1.14.0
+release=1
+source="ftp://ftp.gnupg.org/gcrypt/gpgme/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	./configure --prefix=/usr --disable-gpg-test
+	make
+	make DESTDIR=$pkg install
+}
+

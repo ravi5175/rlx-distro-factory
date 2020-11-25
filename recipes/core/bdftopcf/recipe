@@ -1,0 +1,21 @@
+# Description: Convert X font from Bitmap Distribution Format to Portable Compiled Format
+# URL: http://xorg.freedesktop.org/
+# Depends on: xorgproto
+
+name=bdftopcf
+version=1.1
+release=1
+source="https://www.x.org/pub/individual/app/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure \
+		--prefix=/usr \
+                --sysconfdir=/etc \
+                --localstatedir=/var \
+                --disable-static \
+		--disable-devel-docs
+	make
+	make DESTDIR=$pkg install
+}

@@ -1,0 +1,19 @@
+# Description: Python 2 bindings to the GObject class from GLib
+# URL: http://www.pygtk.org/
+# Depends on: python2 python-gobject2
+
+name=python2-gobject2
+version=2.28.7
+release=1
+source="https://ftp.gnome.org/pub/gnome/sources/pygobject/${version%.*}/pygobject-$version.tar.xz"
+
+build() {
+	cd pygobject-$version
+
+	./configure --prefix=/usr \
+		--disable-introspection \
+		PYTHON=/usr/bin/python2
+	make
+	make DESTDIR=$pkg install
+	rm -fr $pkg/usr/{include/,lib/pkgconfig/,share/pygobject/xsl}
+}

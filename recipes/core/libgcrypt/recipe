@@ -1,0 +1,16 @@
+# Description: A general purpose crypto library based on the code used in GnuPG
+# URL: https://www.gnupg.org/
+# Depends on: libgpg-error
+
+name=libgcrypt
+version=1.8.7
+release=1
+source="https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

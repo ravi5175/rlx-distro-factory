@@ -1,0 +1,23 @@
+# Description: C library supporting GObject introspection for manipulation of block devices
+# URL: https://github.com/rhinstaller/libblockdev
+# Depends on: gobject-introspection glib eudev kmod parted lvm2 util-linux libbytesize cryptsetup nss nspr volume_key yaml
+
+name=libblockdev
+version=2.24
+release=1
+source="https://github.com/storaged-project/libblockdev/releases/download/$version-1/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+	
+	./configure \
+		--prefix=/usr     \
+            	--sysconfdir=/etc \
+            	--with-python3    \
+            	--without-gtk-doc \
+		--without-nvdimm  \
+            	--without-dm
+	make
+	make DESTDIR=$pkg install
+}
+

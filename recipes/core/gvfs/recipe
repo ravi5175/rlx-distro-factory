@@ -1,0 +1,35 @@
+# Description: Userspace virtual filesystem designed to work with the I/O abstractions of GLib's GIO library
+# Depends on: glib libgudev udisks2 libsecret libmtp libsoup libxml2 gcr libgcrypt libcdio-paranoia fuse3 polkit libarchive gsettings-desktop-schemas
+
+name=gvfs
+version=1.46.1
+release=1
+source="https://ftp.gnome.org/pub/gnome/sources/$name/${version%.*}/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	mkdir build
+	cd    build
+
+	[ -f /usr/lib/pkgconfig/libmtp.pc ] || GVFS_OPTS="$GVFS_OPTS -Dmtp=false"
+	[ -f /usr/lib/pkgconfig/fuse3.pc ] || GVFS_OPTS="$GVFS_OPTS -Dfuse=false"
+	[ -f /usr/lib/pkgconfig/libimobiledevice-1.0.pc ] || GVFS_OPTS="$GVFS_OPTS -Dafc=false"
+	[ -f /usr/lib/pkgconfig/goa-1.0.pc ] || GVFS_OPTS="$GVFS_OPTS -Dgoa=false -Dgoogle=false"
+	[ -f /usr/lib/pkgconfig/libbluray.pc ] || GVFS_OPTS="$GVFS_OPTS -Dbluray=false"
+	[ -f /usr/lib/pkgconfig/smbclient.pc ] || GVFS_OPTS="$GVFS_OPTS -Dsmb=false"
+	[ -f /usr/lib/pkgconfig/libgphoto2.pc ] || GVFS_OPTS="$GVFS_OPTS -Dgphoto2=false"
+	[ -f /usr/lib/pkgconfig/libnfs.pc ] || GVFS_OPTS="$GVFS_OPTS -Dnfs=false"
+	
+	meson --prefix=/usr     \
+	      --sysconfdir=/etc \
+	      --libexecdir=/usr/lib/$name \
+	      -Dsystemduserunitdir=no \
+	      -Dtmpfilesdir=no  \
+	      -Dlogind=false    \
+	      -Ddnssd=false     \
+	      -Dsftp=false \
+	      ${GVFS_OPTS}
+	ninja
+	DESTDIR=$pkg ninja install
+}

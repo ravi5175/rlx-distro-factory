@@ -1,0 +1,10 @@
+General setup --->
+    [*]     Control Group support                        [CONFIG_CGROUPS]
+File systems --->
+    [*]     Inotify support for userspace                [CONFIG_INOTIFY_USER]
+            Pseudo filesystems --->
+                [*]    Tmpfs POSIX Access Control Lists  [CONFIG_TMPFS_POSIX_ACL]
+
+-*- Cryptographic API --->                               [CONFIG_CRYPTO]
+   <M/*> Userspace cryptographic algorithm configuration [CONFIG_CRYPTO_USER]
+   <M/*> User-space interface for hash algorithms        [CONFIG_CRYPTO_USER_API_HASH]

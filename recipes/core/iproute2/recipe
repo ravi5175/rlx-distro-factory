@@ -1,0 +1,28 @@
+# Description: Programs for basic and advanced IPV4-based networking
+# URL: https://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+# Depends on: elfutils libcap
+
+name=iproute2
+version=5.9.0
+release=1
+source="https://www.kernel.org/pub/linux/utils/net/$name/$name-$version.tar.xz
+	musl-fixes.patch
+	avoid-arpd.patch"
+
+build() {
+
+	cd $name-$version
+
+	patch -Np1 -i $src/musl-fixes.patch
+	#patch -Np1 -i $src/avoid-arpd.patch
+
+	sed -i /ARPD/d Makefile
+	rm -fv man/man8/arpd.8
+	
+	sed -i 's/m_ipt.o//' tc/Makefile
+
+	./configure		\
+		--prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

@@ -1,0 +1,23 @@
+# Description: Argp-standalone
+
+name=argp-standalone
+version=1.3
+release=1
+source="http://www.lysator.liu.se/~nisse/misc/$name-$version.tar.gz
+	argp-standalone-1.3-void-fix-no_use_inline.patch"
+
+build() {
+	cd $name-$version
+	
+	#patch -Np0 -i ../argp-standalone-1.3-void-fix-no_use_inline.patch
+	
+	CFLAGS=" -fPIC"		\
+	./configure		\
+		--prefix=/usr	\
+		--disable-static
+	
+	make
+	
+	install -vD libargp.a -t $pkg/usr/lib/
+	install -vDm644 argp.h -t $pkg/usr/include/
+}

@@ -1,0 +1,22 @@
+# Description: Programs for reading, writing, and converting info pages
+# URL: https://www.gnu.org/software/texinfo/
+# Depends on: ncurses
+
+name=texinfo
+version=6.7
+release=1
+source="https://ftp.gnu.org/gnu/texinfo/$name-$version.tar.xz"
+
+build() {
+
+	cd $name-$version
+
+	# Fix a file that creates a lot of failures in the regression checks
+	sed -i '5481,5485 s/({/(\\{/' tp/Texinfo/Parser.pm
+
+	./configure		\
+		--prefix=/usr	\
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}

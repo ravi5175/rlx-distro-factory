@@ -1,0 +1,30 @@
+# Description: Programs for dynamic creation of device nodes
+# URL: https://wiki.gentoo.org/wiki/Project:Eudev
+# Depends on: util-linux kmod
+
+name=eudev
+version=3.2.9
+release=1
+source="https://dev.gentoo.org/~blueness/$name/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+
+	./configure 			    \
+		    --prefix=/usr           \
+	            --bindir=/usr/sbin      \
+	            --sbindir=/usr/sbin     \
+	            --libdir=/usr/lib       \
+	            --sysconfdir=/etc       \
+	            --libexecdir=/usr/lib   \
+	            --with-rootprefix=      \
+	            --with-rootlibdir=/usr/lib  \
+	            --enable-manpages       \
+	            --disable-static
+	make
+
+	mkdir -pv $pkg/lib/udev/rules.d
+	mkdir -pv $pkg/etc/udev/rules.d
+
+	make DESTDIR=$pkg install
+}

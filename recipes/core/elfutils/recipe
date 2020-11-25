@@ -1,0 +1,50 @@
+# Description: utilities and libraries for handling ELF files
+# Depends on: zlib libuargp xz bzip2 musl-obstack
+
+name=elfutils
+version=0.181
+release=1
+source="https://sourceware.org/ftp/elfutils/$version/elfutils-$version.tar.bz2
+	error.h
+	fix-aarch64_fregs.patch
+	fix-uninitialized.patch
+	musl-cdefs.patch
+	musl-fts-obstack.patch
+	musl-macros.patch
+	musl-qsort_r.patch
+	musl-strerror_r.patch
+	musl-strndupa.patch
+	musl-asm-ptrace-h.patch"
+
+build() {
+
+	cd $name-$version
+
+	for i in $src/*.patch; do
+		patch -Np1 -i $i
+	done
+	
+	cp $src/error.h lib/
+	cp $src/error.h src/
+	
+
+	autoreconf -if
+	
+cat >lib/libintl.h << EOF
+#ifndef LIBINTL_H
+#define LIBINTL_H
+#define _(x) (x)
+#endif
+EOF
+	CFLAGS="$CFLAGS -Wno-error" 	\
+	./configure $flags 		\
+		--prefix=/usr 		\
+		--program-prefix="eu-" 	\
+		--disable-debuginfod 	\
+		--disable-nls		\
+		--disable-libdebuginfod	\
+		--disable-werror
+	make
+	
+	make DESTDIR=$pkg install
+}

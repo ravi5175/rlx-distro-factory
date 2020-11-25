@@ -1,0 +1,16 @@
+# Description: Front-end to an XSL toolchain
+# URL: https://pagure.io/xmlto/
+
+name=xmlto
+version=0.0.28
+release=1
+source="https://releases.pagure.org/xmlto/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	LINKS="/usr/bin/links"
+	./configure --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}
+

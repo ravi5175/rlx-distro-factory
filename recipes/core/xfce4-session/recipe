@@ -1,0 +1,20 @@
+# Description: Session manager for Xfce
+# URL: http://www.xfce.org/
+# Depends on: glib libsm libice libx11 libxfce4ui libxfce4util libwnck3 gtk3 pango atk cairo gdk-pixbuf polkit xfconf iceauth
+
+name=xfce4-session
+version=4.15.0
+release=1
+source="https://archive.xfce.org/src/xfce/xfce4-session/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--disable-legacy-sm \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

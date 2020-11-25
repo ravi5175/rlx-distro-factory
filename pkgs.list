@@ -8,4 +8,8 @@ ncurses
 readline
 bash
 sbase
+linux
 ubase
+cpio
+gzip
+kmod

@@ -1,0 +1,18 @@
+# Description: Linux kernel headers
+
+name=linux-api-headers
+version=5.8.13
+release=1
+source="https://www.kernel.org/pub/linux/kernel/v5.x/linux-$version.tar.xz"
+
+build() {
+	cd linux-$version
+	
+	make mrproper
+	
+	make headers
+	find usr/include -name '.*' -delete
+	mkdir -pv $pkg/usr/include
+	cp -rv usr/include/* $pkg/usr/include
+	rm -v $pkg/usr/include/Makefile
+}

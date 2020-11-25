@@ -1,0 +1,20 @@
+# Description: an image viewing and manipluation program
+# URL: https://www.imagemagick.org
+# Depends on: fontconfig lcms2 libpng libxext libxml2
+# License: custom
+
+name=imagemagick
+version=7.0.10-34
+release=1
+source="https://imagemagick.org/download/ImageMagick-$version.tar.xz"
+
+build() {
+	cd ImageMagick-$version
+
+	./configure 				\
+		    --prefix=/usr		\
+		    --sysconfdir=/etc	\
+		    --enable-shared
+	make
+	make DESTDIR=$pkg install
+}

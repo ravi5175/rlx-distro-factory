@@ -1,0 +1,20 @@
+# Description: Provides a user space library for accessing the DRM, direct rendering manager, on operating systems that support the ioctl interface
+# Depends on: libpciaccess meson
+
+name=libdrm
+version=2.4.102
+release=1
+source="https://dri.freedesktop.org/$name/$name-$version.tar.bz2
+	dont-build-noveau-tests.patch"
+
+build() {
+	cd $name-$version
+
+	patch -Np0 -i $src/dont-build-noveau-tests.patch
+
+	mkdir build
+	cd build
+	meson --prefix=/usr -Dudev=true
+	ninja
+	DESTDIR=$pkg ninja install
+}

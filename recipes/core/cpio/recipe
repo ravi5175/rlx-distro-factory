@@ -1,0 +1,28 @@
+# Description: cpio
+# URL: https://ftp.gnu.org/gnu/cpio/
+
+name=cpio
+version=2.13
+release=1
+source="https://ftp.gnu.org/gnu/$name/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	autoreconf -ifv
+	
+	[[ $BOOTSTRAP ]] && {
+		_extra="--host=$TARGET --build=$HOST"
+	}
+	export CFLAGS="-fcommon"
+	sed -i '/The name/,+2 d' src/global.c
+  	./configure				\
+		--prefix=/usr 		\
+		--disable-static 	\
+		--enable-mt			\
+		--with-rmt=/usr/libexec/rmt	\
+		$_extra
+	make
+	make DESTDIR=$pkg install
+	
+	unset CFLAGS
+}

@@ -1,0 +1,30 @@
+# Description: Simple interface for userspace programs to export a virtual filesystem to the Linux kernel
+# URL: https://github.com/libfuse/libfuse
+
+name=fuse2
+version=2.9.9
+release=1
+source="https://github.com/libfuse/libfuse/releases/download/fuse-$version/fuse-$version.tar.gz
+	fuse.conf"
+
+build() {
+	if [ "$BOOTSTRAP" ]; then
+		flags="--host=$TARGET --build=$HOST"
+	fi
+
+	cd fuse-$version
+
+	./configure $flags \
+		    --prefix=/usr    \
+	            --disable-static \
+	            INIT_D_PATH=/tmp/init.d
+	make
+	make DESTDIR=$pkg install
+
+	install -d $pkg/lib
+	mv -v   $pkg/usr/lib/libfuse.so.* $pkg/lib
+	ln -sfv ../../lib/libfuse.so.2.9.9 $pkg/usr/lib/libfuse.so
+	rm -rf $pkg/tmp $pkg/dev
+
+	install -Dm 644 $src/fuse.conf $pkg/etc/fuse.conf
+}

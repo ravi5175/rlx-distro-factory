@@ -1,0 +1,20 @@
+# Description: DOS filesystem utilities
+# URL: https://github.com/dosfstools/dosfstools
+# Depends on: musl
+
+name=dosfstools
+version=4.1
+release=1
+source="https://github.com/$name/$name/releases/download/v$version/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	./configure 				\
+		    --prefix=/usr		\
+		    --libexecdir=/usr/lib	\
+		    --sbindir=/usr/bin		\
+		    --enable-compat-symlinks
+	make
+	make DESTDIR=$pkg install
+}

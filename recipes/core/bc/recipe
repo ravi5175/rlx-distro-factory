@@ -1,0 +1,18 @@
+# Description: An arbitrary precision numeric processing language
+# URL: https://www.gnu.org/software/bc/
+# Depends on: readline ncurses
+
+name=bc
+version=3.1.6
+release=1
+source="https://github.com/gavinhoward/bc/releases/download/$version/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	PREFIX=/usr CC=gcc CFLAGS="-std=c99"	\
+	./configure -G -O3
+	
+	make
+	make DESTDIR=$pkg install
+}

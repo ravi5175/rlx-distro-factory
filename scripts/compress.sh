@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -e
+_id="compress"
+_desc="compress bootstrap build"
 
-. config.sh
+
 _ALGO=${ALGO:-"zstd"}
-_EXCLUDE=${EXCLUDE:-"cross-tools rootfs"}
+_EXCLUDE=${EXCLUDE:-"cross-tools"}
 _AOUT=${AOUT:-"$(pwd)/rlxos-${RLX_VER}-${RLX_ARCH}"}
 
 compress_tar() {
@@ -21,35 +22,59 @@ compress_tar() {
 	cd -
 }
 
+compress_cpio() {
+	cd $RLX
+
+	_exstr=""
+	for i in $_EXCLUDE ; do
+		_exstr="$_exstr -type d -name $i -prune"
+	done
+	
+	echo "compressing initrd ($_exstr)"
+	find . $_exstr -o -print | cpio -o -H newc --quiet | gzip -9 > $_AOUT.cpio.gz
+	
+	echo "initrd is ready $_AOUT.cpio.gz"
+	cd -
+}
+
 compress_squa() {
 	cd $RLX
 
+	_exstr=""
+	for _i in $_EXCLUDE ; do
+		_exstr="$_exstr -e $_i/*"
+	done
 	echo "compressing $_AOUT.squa"
-	mksquashfs * "$_AOUT.squa" -wildcards -e "'$_EXCLUDE'" -comp $_ALGO
+	mksquashfs $RLX "$_AOUT.squa" \
+		-comp $_ALGO			  \
+		$_exstr
+		 
 	
 	echo "tar is ready at $_AOUT.squa"
 	cd -
 }
 
-for i in $@ ; do
-	
-	case $i in
-		tar|squa)
-			_METHOD="compress_$i"
-			;;
-			
-		--algo=*)
-			_ALGO=${i*#=}
-			;;
-			
-		--exclude=*)
-			_EXCLUDE="$_EXCLUDE ${i*#=}"
-			;;
-		--output=*)
-			_AOUT=${i*#=}
-			;;
-			
-	esac
-done
-
+_compress() {
+	for i in $@ ; do
+		
+		case $i in
+			tar|squa|cpio)
+				_METHOD="compress_$i"
+				;;
+				
+			--algo=*)
+				_ALGO=${i#*=}
+				;;
+				
+			--exclude=*)
+				_EXCLUDE="$_EXCLUDE ${i#*=}"
+				;;
+			--output=*)
+				_AOUT=${i#*=}
+				;;
+				
+		esac
+	done
 $_METHOD
+}
+

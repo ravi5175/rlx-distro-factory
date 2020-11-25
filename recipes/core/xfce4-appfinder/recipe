@@ -1,0 +1,16 @@
+# Description: Tool to find and launch installed applications by searching the .desktop files
+# URL: http://www.xfce.org/
+# Depends on: libxfce4ui gtk3 gdk-pixbuf libxfce4util garcon xfconf glib
+
+name=xfce4-appfinder
+version=4.15.2
+release=1
+source="http://archive.xfce.org/src/xfce/xfce4-appfinder/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --disable-nls
+	make
+	make DESTDIR=$pkg install
+}

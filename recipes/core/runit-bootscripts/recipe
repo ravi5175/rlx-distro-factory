@@ -1,0 +1,21 @@
+# Description: Runit bootscripts
+
+name=runit-bootscripts
+version=20200118
+release=1
+backup="etc/runit/rc.startup.local
+	etc/runit/rc.shutdown.local
+	etc/runit/runit.conf
+	etc/runit/modules"
+source="https://github.com/emmett1/runit-bootscripts/archive/$version/$name-$version.tar.gz"
+
+build() {
+	cd $name-$version
+	make CC=${CC:-gcc}
+	make CC=${CC:-gcc} DESTDIR=$pkg install
+	ln -s runit-init $pkg/sbin/init
+	for i in $(seq 6); do
+		ln -s /run/runit/supervise.getty-tty$i $pkg/etc/sv/getty-tty$i/supervise
+	done
+	ln -s /run/runit/supervise.sulogin $pkg/etc/sv/sulogin/supervise
+}

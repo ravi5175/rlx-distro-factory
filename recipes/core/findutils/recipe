@@ -1,0 +1,18 @@
+# Description: Programs to find files
+# URL: https://www.gnu.org/software/findutils
+
+name=findutils
+version=4.7.0
+release=1
+source="https://ftp.gnu.org/gnu/$name/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	./configure				\
+		--prefix=/usr 			\
+		--libexecdir=/usr/lib/$name 	\
+		--localstatedir=/var/lib/locate 
+	make
+	make DESTDIR=$pkg install
+}

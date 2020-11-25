@@ -1,0 +1,24 @@
+# Description: X.org misc fonts
+# URL: http://xorg.freedesktop.org/
+# Depends on: util-macros mkfontscale font-util
+
+name=font-misc-ethiopic
+version=1.0.4
+release=2
+source="http://ftp.x.org/pub/individual/font/font-misc-ethiopic-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+	
+	find $pkg -name 'fonts.scale' -delete	
+	find $pkg -name 'fonts.dir' -delete
+}
+

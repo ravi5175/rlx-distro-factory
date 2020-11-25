@@ -1,0 +1,14 @@
+# Description: Library that allows easy use of sophisticated DVD navigation features
+# Depends on: libdvdread
+
+name=libdvdnav
+version=6.1.0
+release=1
+source="https://get.videolan.org/libdvdnav/$version/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+	./configure --prefix=/usr --disable-static
+	make
+	make DESTDIR=$pkg install
+}

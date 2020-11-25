@@ -1,0 +1,16 @@
+# Description: Extension for the Thunar file manager for enables automatic management of removable drives and media
+# URL: http://goodies.xfce.org/projects/thunar-plugins/thunar-volman
+# Depends on: exo libxfce4ui gtk3 pango libxfce4util xfconf glib libgudev libnotify
+
+name=thunar-volman
+version=4.15.0
+release=1
+source="http://archive.xfce.org/src/xfce/thunar-volman/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --disable-nls
+	make
+	make DESTDIR=$pkg install
+}

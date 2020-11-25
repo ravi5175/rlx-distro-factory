@@ -1,0 +1,17 @@
+# Description: Utility library registering global X keyboard shortcuts
+# URL: https://github.com/engla/keybinder
+# Depends on: gtk2 gobject-introspection pygtk
+
+name=keybinder2
+version=0.3.2
+release=1
+source="https://github.com/kupferlauncher/keybinder/releases/download/v$version/keybinder-$version.tar.gz"
+
+build() {
+	cd keybinder-$version
+
+	./configure --prefix=/usr --disable-lua
+	make
+	make DESTDIR=$pkg install
+}
+

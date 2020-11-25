@@ -1,0 +1,16 @@
+# Description: Basic utility library for the Xfce desktop environment
+# URL: http://www.xfce.org/
+# Depends on: gobject-introspection vala glib intltool
+
+name=libxfce4util
+version=4.14.0
+release=1
+source="http://archive.xfce.org/src/xfce/$name/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

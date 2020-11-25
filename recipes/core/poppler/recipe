@@ -1,0 +1,25 @@
+# Description: PDF rendering library and command line tools used to manipulate PDF files
+# URL: https://poppler.freedesktop.org/
+# Depends on: freetype2 fontconfig libjpeg-turbo zlib curl openjpeg2 lcms2 libpng libtiff nss nspr cmake cairo
+
+name=poppler
+version=20.10.0
+release=1
+source="https://poppler.freedesktop.org/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+  	mkdir build
+	cd    build
+	
+	cmake  -DCMAKE_BUILD_TYPE=Release   \
+	       -DCMAKE_INSTALL_PREFIX=/usr  \
+	       -DTESTDATADIR=$PWD/testfiles \
+	       -DENABLE_UNSTABLE_API_ABI_HEADERS=ON \
+	       -DENABLE_GLIB=OFF \
+	       -DENABLE_QT5=OFF \
+	       .. 
+	make
+	make DESTDIR=$pkg install
+}

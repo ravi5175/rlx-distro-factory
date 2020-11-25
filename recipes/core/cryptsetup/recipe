@@ -1,0 +1,17 @@
+# Description: Used to set up transparent encryption of block devices using the kernel crypto API
+# URL: https://gitlab.com/cryptsetup/cryptsetup/
+# Depends on: popt util-linux lvm2 libressl json-c
+
+name=cryptsetup
+version=2.3.4
+release=1
+source="https://www.kernel.org/pub/linux/utils/cryptsetup/v${version%.*}/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+	./configure --prefix=/usr \
+		    --disable-nls \
+	            --with-crypto_backend=openssl
+	make
+	make DESTDIR=$pkg install
+}

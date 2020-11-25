@@ -1,0 +1,40 @@
+# Description: The Practical Extraction and Report Language
+# URL: https://www.perl.org/
+# Depends on: gdbm bzip2 zlib
+
+name=perl
+version=5.32.0
+release=1
+source="https://www.cpan.org/src/5.0/$name-$version.tar.xz
+        musl-locale.patch"
+
+build() {
+	cd $name-$version
+
+	export BUILD_ZLIB=False
+	export BUILD_BZIP2=0
+	export CF_OLD=$CFLAGS
+	export CFLAGS+=" -DNO_POSIX_2008_LOCALE"
+	export CFLAGS+=" -D_GNU_SOURCE"
+	
+	rm -rf cpan/Compress-Raw-Zlib/zlib-src
+	rm -rf cpan/Compress-Raw-Bzip2/bzip2-src
+	sed -i '/\(bzip2\|zlib\)-src/d' MANIFEST
+	
+	patch -p1 < ../musl-locale.patch
+	sh Configure -des -Dprefix=/usr                                \
+                  -Dvendorprefix=/usr                          \
+                  -Dprivlib=/usr/lib/perl5/5.32/core_perl      \
+                  -Darchlib=/usr/lib/perl5/5.32/core_perl      \
+                  -Dsitelib=/usr/lib/perl5/5.32/site_perl      \
+                  -Dsitearch=/usr/lib/perl5/5.32/site_perl     \
+                  -Dvendorlib=/usr/lib/perl5/5.32/vendor_perl  \
+                  -Dvendorarch=/usr/lib/perl5/5.32/vendor_perl \
+                  -Dman1dir=/usr/share/man/man1                \
+                  -Dman3dir=/usr/share/man/man3                \
+                  -Dpager="/usr/bin/less -isR"                 \
+                  -Duseshrplib                                 \
+                  -Dusethreads
+	make
+	make DESTDIR=$pkg install
+}

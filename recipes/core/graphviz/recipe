@@ -1,0 +1,16 @@
+# Description: Graph visualization software
+# Depends on: libtool expat zlib pango cairo glib harfbuzz fontconfig freetype2 libxrender libx11 poppler-glib gtk2 atk gdk-pixbuf libxaw libsm libice libxpm libxt libxmu libxext
+
+name=graphviz
+version=2.40.1
+release=1
+source="$name-$version.tar.gz::http://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
+
+build() {
+	cd $name-$version
+	
+	export LIBPOSTFIX=/
+	./configure --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

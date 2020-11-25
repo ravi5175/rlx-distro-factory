@@ -1,0 +1,21 @@
+# Description: Collection of programs that are useful for adjusting your Xfce preferences
+# URL: http://www.xfce.org/
+# Depends on: libxfce4ui xfconf exo gtk3 pango libxfce4util garcon glib gdk-pixbuf libxklavier libxi libnotify fontconfig libx11 libxrandr upower cairo colord atk libxcursor
+
+name=xfce4-settings
+version=4.15.2
+release=1
+source="https://archive.xfce.org/src/xfce/xfce4-settings/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--enable-sound-settings \
+		--enable-pluggable-dialogs \
+		--disable-nls
+	make
+	make DESTDIR=$pkg install
+}

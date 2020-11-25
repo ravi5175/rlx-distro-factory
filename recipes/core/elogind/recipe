@@ -1,0 +1,33 @@
+# Description: The systemd project's logind, extracted to a standalone package
+# URL: https://github.com/elogind/elogind
+# Depends on: acl dbus-noelogind linux-pam
+
+name=elogind
+version=243.7
+release=1
+source="https://github.com/elogind/elogind/archive/v$version/$name-$version.tar.gz
+        elogind-user"
+
+build() {
+	cd $name-$version
+
+	mkdir build 
+	cd    build 
+
+	meson	\
+		--prefix=/usr                        \
+		--sysconfdir=/etc                    \
+		--localstatedir=/var                 \
+		-Dcgroup-controller=elogind          \
+		-Ddbuspolicydir=/usr/share/dbus-1/system.d \
+		-Dman=false                          \
+		..  
+	ninja
+
+        
+	DESTDIR=$pkg ninja install                                           
+	ln -sfv  libelogind.pc $pkg/usr/lib/pkgconfig/libsystemd.pc 
+	ln -sfvn elogind $pkg/usr/include/systemd	
+
+	install -Dm644 $src/elogind-user -t $pkg/etc/pam.d/
+}

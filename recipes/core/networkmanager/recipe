@@ -1,0 +1,72 @@
+# Description: Network connection manager and user applications
+# URL: https://wiki.gnome.org/Projects/NetworkManager
+# Depends on: gobject-introspection vala glib libndp eudev curl util-linux nss nspr readline newt intltool libxslt dbus polkit python-gobject
+
+name=networkmanager
+version=1.26.4
+release=1
+backup="etc/NetworkManager/NetworkManager.conf"
+source="https://ftp.gnome.org/pub/gnome/sources/NetworkManager/${version%.*}/NetworkManager-$version.tar.xz
+	run
+	musl.patch
+	musl-basic.patch
+	musl-fix-includes.patch
+	musl-use-srand48.patch
+	fix-musl-qsort_r.patch
+	musl-process-util.patch
+	musl-network-support.patch
+	fix-musl-linux-header.diff"
+
+build() {
+	cd NetworkManager-$version
+
+	patch -Np0 -i $src/musl-basic.patch
+	patch -Np0 -i $src/musl-fix-includes.patch
+	patch -Np0 -i $src/musl-use-srand48.patch
+	patch -Np0 -i $src/fix-musl-qsort_r.patch
+	patch -Np0 -i $src/musl-process-util.patch
+	patch -Np0 -i $src/musl-network-support.patch
+	patch -Np0 -i $src/fix-musl-linux-header.diff
+
+	# Fix a missing meson.build file for initrd hooks
+	sed '/initrd/d' -i src/meson.build
+
+	export CFLAGS="$CFLAGS -DRTLD_DEEPBIND=0"
+
+	mkdir build
+	cd    build
+	
+	meson --prefix /usr              \
+	      --sysconfdir /etc          \
+	      --libexecdir lib           \
+	      --localstatedir /var       \
+	      -Djson_validation=false    \
+	      -Dlibaudit=no              \
+	      -Dlibpsl=false             \
+	      -Dnmtui=true               \
+	      -Dovs=false                \
+	      -Dppp=false                \
+	      -Dselinux=false            \
+	      -Dudev_dir=/lib/udev       \
+	      -Dsession_tracking=no      \
+	      -Dmodem_manager=false      \
+	      -Dsystemdsystemunitdir=no  \
+	      -Dsystemd_journal=false    \
+	      -Dmodify_system=true       \
+	      -Ddocs=false               \
+	      -Dqt=false                 \
+	      -Dtests=no                 \
+	      ..
+	ninja
+	DESTDIR=$pkg ninja install
+
+mkdir -p $pkg/etc/NetworkManager
+cat >> $pkg/etc/NetworkManager/NetworkManager.conf << "EOF"
+[main]
+plugins=keyfile
+EOF
+
+	# runit service
+	install -Dm755 $src/run $pkg/etc/sv/$name/run
+	ln -s /run/runit/supervise.$name $pkg/etc/sv/$name/supervise
+}

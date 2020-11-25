@@ -1,0 +1,22 @@
+# Description: Tools and library to manipulate EFI variables
+# Depends on: musl
+name=efivar
+version=37
+release=1
+source="https://github.com/rhboot/efivar/releases/download/$version/$name-$version.tar.bz2
+	efivar-fix-format_guid.patch
+	efivar-fix-packed.patch
+	musl-bswap.patch
+	efivar-fix-ucs2.patch"
+
+build() {
+	cd $name-$version
+
+	# thanks to ataraxia for the patch
+	for i in $src/*.patch ; do
+		patch -Np1 -i $i
+	done
+	export CFLAGS="$CFLAGS -flto -flto-partition=none"
+	make -j1
+	make libdir=/usr/lib DESTDIR=$pkg install
+}

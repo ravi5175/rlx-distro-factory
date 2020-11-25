@@ -1,0 +1,32 @@
+# Description: Linux kernel, sources and modules
+# Depends on: lz4
+
+NO_STRIP=1
+name=linux
+version=5.8.13
+release=1
+source="https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-$version.tar.xz config"
+
+build() {
+
+	cd linux-$version
+
+	make mrproper
+
+	cp $src/config ./.config
+
+	sed '/^CONFIG_LOCALVERSION=/d' -i .config
+	echo 'CONFIG_LOCALVERSION="-rlxos"' >> .config
+	
+	make bzImage modules -j $(nproc)
+	make INSTALL_MOD_PATH=$pkg modules_install
+
+	mkdir -p $pkg/boot
+
+	cp  arch/x86/boot/bzImage $pkg/boot/vmlinuz-rlx
+	
+	[[ -d $pkg/lib ]] && {
+		mkdir -pv $pkg/usr
+		mv $pkg/lib $pkg/usr/
+	}
+}

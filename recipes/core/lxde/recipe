@@ -1,0 +1,11 @@
+# Description: Meta port for lxde desktop
+# URL: http://lxde.org/
+# Depends on: lxmenu-data libfm-extra menu-cache libfm pcmanfm lxpanel lxappearance lxsession lxde-common gpicview lxappearance-obconf lxinput lxrandr lxtask lxterminal leafpad
+
+name=lxde
+version=0.1
+release=1
+
+build() {
+	mkdir -p $pkg/usr
+}

@@ -1,0 +1,16 @@
+# Description: GTK+3 terminal emulator for xfce desktop
+# URL: http://www.xfce.org/
+# Depends on: libx11 vte3 libxfce4ui gtk3 pango cairo gdk-pixbuf libxfce4util xfconf glib
+
+name=xfce4-terminal
+version=0.8.9.2
+release=1
+source="http://archive.xfce.org/src/apps/xfce4-terminal/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --disable-nls
+	make
+	make DESTDIR=$pkg install
+}

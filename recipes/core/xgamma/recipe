@@ -1,0 +1,21 @@
+# Description: Alter a monitor's gamma correction
+# URL: http://xorg.freedesktop.org/
+# Depends on: libx11 libxxf86vm 
+
+name=xgamma
+version=1.0.6
+release=1
+source="http://ftp.x.org/pub/individual/app/xgamma-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}
+

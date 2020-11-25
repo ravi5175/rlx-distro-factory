@@ -1,0 +1,22 @@
+# Description: Utilities used to display information about USB buses in the system and the devices connected to them
+# URL: http://linux-usb.sourceforge.net/
+# Depends on: libusb eudev
+
+name=usbutils
+version=013
+release=1
+options="!checksum"
+source="https://www.kernel.org/pub/linux/utils/usb/usbutils/$name-$version.tar.xz
+	http://www.linux-usb.org/usb.ids"
+
+build() {
+	cd $name-$version
+
+	./autogen.sh
+	./configure --prefix=/usr --datadir=/usr/share/hwdata
+	make
+	make DESTDIR=$pkg install
+
+	mkdir -p $pkg/usr/share/hwdata
+	cp $src/usb.ids $pkg/usr/share/hwdata/
+}

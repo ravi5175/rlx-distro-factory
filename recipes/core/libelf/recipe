@@ -1,0 +1,39 @@
+# Description: utilities and libraries for handling ELF files
+# Depends on: zlib libuargp xz bzip2
+
+name=libelf
+version=0.181
+release=1
+source="https://sourceware.org/ftp/elfutils/$version/elfutils-$version.tar.bz2
+	musl-cdefs.patch
+	musl-tests.patch
+	musl-utils.patch
+	no-werror.patch
+	error.h"
+
+build() {
+	cd elfutils-$version
+
+	STRIP_NUM=1
+	for i in $src/*.patch; do
+	[[ "$i" == "$src/musl-cdefs.patch" ]] && STRIP_NUM=0 || STRIP_NUM=1
+		patch -Np${STRIP_NUM} -i $i
+	done
+	
+	cp "$src/error.h" lib/
+	cp "$src/error.h" src/
+
+	autoreconf -if
+	CFLAGS="$CFLAGS -Wno-error -Wno-error=null-dereference" 	\
+	./configure			\
+		--prefix=/usr 		\
+		--disable-libdebuginfod	\
+		--disable-debuginfod
+	
+	make -j8
+	
+	make -C libelf install DESTDIR="$pkg"
+	
+	mkdir -pv $pkg/usr/lib/pkgconfig/
+	cp config/libelf.pc "$pkg"/usr/lib/pkgconfig
+}

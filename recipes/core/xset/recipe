@@ -1,0 +1,21 @@
+# Description: User preference utility for X
+# URL: http://xorg.freedesktop.org/
+# Depends on: libxmu libx11 libxext 
+
+name=xset
+version=1.2.4
+release=1
+source="http://ftp.x.org/pub/individual/app/xset-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}
+

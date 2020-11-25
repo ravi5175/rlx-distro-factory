@@ -1,0 +1,42 @@
+# Description: Utilities for handling file systems, consoles, partitions, and messages
+# Depends on: ncurses zlib readline pcre2
+
+name=util-linux
+version=2.36
+release=1
+source="https://www.kernel.org/pub/linux/utils/$name/v${version}/$name-$version.tar.xz
+	fix-musl.patch"
+
+build() {
+	cd $name-$version
+
+	patch -Np0 -i $src/fix-musl.patch
+
+	mkdir -pv $pkg/var/lib/hwclock
+	export CFLAGS="-F_DIRENT_HAVE_D_TYPE"
+
+	NOCONFIGURE=1 ./autogen.sh
+
+	./configure 					 \
+		    ADJTIME_PATH=/var/lib/hwclock/adjtime   \
+		    --docdir=/usr/share/doc/$name	  \
+		    --prefix=/usr	 \
+		    --sbindir=/usr/sbin  \
+		    --bindir=/usr/bin    \
+	            --disable-chfn-chsh  \
+	            --disable-login      \
+	            --disable-nologin    \
+	            --disable-su         \
+	            --disable-setpriv    \
+	            --disable-runuser    \
+	            --disable-pylibmount \
+	            --disable-static     \
+	            --without-python     \
+	            --without-systemd    \
+		    --disable-nls        \
+	            --without-systemdsystemunitdir
+	make
+	make DESTDIR=$pkg install
+	
+	unset CFLAGS
+}

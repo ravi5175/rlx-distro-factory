@@ -1,0 +1,16 @@
+# Description: Support library used in the Xfce desktop
+# URL: http://www.xfce.org/
+# Depends on: gtk2 pango atk cairo gdk-pixbuf glib harfbuzz fontconfig freetype2 libsm libice libx11 libxfce4util libxfce4ui gtk3 perl-uri
+
+name=exo
+version=4.15.2
+release=1
+source="http://archive.xfce.org/src/xfce/$name/${version%.*}/$name-$version.tar.bz2"
+
+build() {
+	cd $name-$version
+
+	./configure --prefix=/usr --sysconfdir=/etc
+	make
+	make DESTDIR=$pkg install
+}

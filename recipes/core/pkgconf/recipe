@@ -1,0 +1,20 @@
+# Description: Package compiler and linker metadata toolkit
+# URL: https://github.com/pkgconf/pkgconf
+
+name=pkgconf
+version=1.7.3
+release=1
+source="http://distfiles.dereferenced.org/$name/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+	
+	./configure \
+		--prefix=/usr
+	
+	make
+	
+	make DESTDIR=$pkg install
+	
+	ln -sf pkgconf "$pkg"/usr/bin/pkg-config
+}

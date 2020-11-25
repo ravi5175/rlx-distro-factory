@@ -1,20 +1,21 @@
-# Description: collection of unportable tools
-# URL: https://git.suckless.org/ubase/
-# Maintainer: itsmanjeet@rlxos.dev
-# Depends on: musl libressl
-# Category: system
-# License: MIT
+# Description: suckless core-utils
+# URL: https://git.suckless.org/ubase
 
 name=ubase
-version=0.1.0
+version=0.1.0-rlx
 release=1
-source="$name-$version.tar.gz::https://github.com/releax/ubase/archive/$version.tar.gz
-		config.mk"
+source="$name-$version.tar.gz::https://github.com/rlxos/$name/archive/$version.tar.gz
+       config.mk"
 
 build() {
 	cd $name-$version
 	
 	cp $src/config.mk .
+	PREFIX=/usr make
 	
 	make install DESTDIR=$pkg
+	
+	rm $pkg/usr/bin/{lastlog,uptime,free,vmstat,pidof,passwd,su,lsmod,watch,ps,login,clear,pwdx,stty}
+	rm $pkg/usr/share/man/man8/{lastlog,lsmod,rmmod,nologin,sysctl,lastlog}.8
+	rm $pkg/usr/share/man/man1/{watch,su,pidof,ps,free,pwdx,login,uptime,passwd,clear}.1
 }

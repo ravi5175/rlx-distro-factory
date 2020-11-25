@@ -1,0 +1,22 @@
+# Description: Version control system designed to handle everything from small to very large projects with speed and efficiency
+# URL: https://git-scm.com/
+# Depends on: zlib curl expat libressl
+
+name=git
+version=2.29.1
+release=1
+source="https://www.kernel.org/pub/software/scm/$name/$name-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	make CFLAGS="$CFLAGS" \
+		prefix=/usr \
+		gitexecdir=/usr/lib/git-core \
+		perllibdir="$(/usr/bin/perl -MConfig -wle 'print $Config{installvendorlib}')" \
+		NO_REGEX=NeedsStartEnd \
+		DESTDIR=$pkg install
+
+	mkdir -p $pkg/usr/share/git/
+	install -m644 ./contrib/completion/git-prompt.sh $pkg/usr/share/git/git-prompt.sh
+}

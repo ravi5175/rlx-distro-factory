@@ -1,0 +1,20 @@
+# Description: Common functions for Xorg input drivers
+# URL: https://www.freedesktop.org/wiki/Software/libevdev/
+# Depends on: python
+
+name=libevdev
+version=1.10.0
+release=1
+source="https://www.freedesktop.org/software/libevdev/libevdev-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+  	./configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
+	make
+	make DESTDIR=$pkg install
+}

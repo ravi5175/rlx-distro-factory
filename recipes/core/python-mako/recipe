@@ -1,0 +1,13 @@
+# Description: Python module that implements hyperfast and lightweight templating for the Python platform
+# URL: http://www.makotemplates.org/
+# Depends on: python-setuptools
+
+name=python-mako
+version=1.1.2
+release=1
+source="https://files.pythonhosted.org/packages/source/M/Mako/Mako-$version.tar.gz"
+
+build() {
+	cd Mako-$version
+	python3 setup.py install --root=$pkg --optimize=1
+}

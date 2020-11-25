@@ -1,0 +1,16 @@
+# Description: Programs for displaying information about running processes
+# URL: http://psmisc.sourceforge.net/index.html
+# Depends on: ncurses
+
+name=psmisc
+version=23.3
+release=1
+source="https://sourceforge.net/projects/psmisc/files/psmisc/psmisc-$version.tar.xz"
+
+build() {
+	cd $name-$version
+
+	./configure $flags --prefix=/usr
+	make
+	make DESTDIR=$pkg install
+}

@@ -2,6 +2,7 @@
 
 . config.sh
 
+clear
 echo "
        .__                      
 _______|  | ___  ___   ____  ______
@@ -82,22 +83,29 @@ repo = core toolchain
 
 echo "   [✓]"
 
-for i in $(cat pkgs.list) ; do
-	[[ -f rlx.$RLX_ARCH/var/lib/app/index/$i/info ]] && continue
-	echo "building $i"
-	[[ ! -f $(pwd)/$RLX_ARCH.appctl.specs ]] && {
-		echo "specifications file missing"
-		exit 1
-	}
-	[[ $i == 'file' ]] && rm $RLX/rootfs
-	APPCTL_SPECS=$(pwd)/$RLX_ARCH.appctl.specs	\
-	appctl install $i							\
-	config=$(pwd)/$RLX_ARCH.appctl.conf
-	[[  $? != 0 ]] && {
-		echo "failed to build $i"
-		exit 1
-	}
-	
-	[[ $i == 'file' ]] && ln -sv . $RLX/rootfs
+check_ext() {
+	echo "checking for $1"
+	[[ "file" =~ $1 ]] && return 0
+	return 1
+}
 
+while [[ 1 ]] ; do
+	echo "Options:"
+	for i in scripts/*.sh ; do
+		. $i &>/dev/null
+		echo -e "\t- $_id : $_desc"
+		unset _id _desc
+	done
+	echo -n ">> "
+	read ans
+	
+	declare -F "_$ans" &>/dev/null
+	if [[ $? != 0 ]] ; then
+		echo "invalid option $ans"
+	fi
+	(set -e; _$ans)
+	if [[ $? != 0 ]] ; then
+		echo "failed to perfrom $ans action"
+		exit 1
+	fi
 done

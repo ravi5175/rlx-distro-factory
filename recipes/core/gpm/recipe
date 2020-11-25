@@ -1,0 +1,38 @@
+# Description: Mouse server for the console and xterm
+# URL: https://www.nico.schottelius.org/software/gpm/
+# Depends on: ncurses
+
+name=gpm
+version=1.20.7
+release=1
+source="https://www.nico.schottelius.org/software/gpm/archives/$name-$version.tar.bz2
+	run
+	musl-fcntl.patch
+	musl-gpm_h.patch
+	musl-linux_major_h.patch
+	musl-select.patch
+	musl-sigaction.patch"
+
+build() {
+	if [ "$BOOTSTRAP" ]; then
+		flags="--host=$TARGET --build=$HOST"
+	fi
+
+	cd $name-$version
+
+	for i in $src/*.patch; do
+		patch -Np0 -i $i
+	done
+
+	./autogen.sh
+	./configure $flags --prefix=/usr --sysconfdir=/etc
+	make
+	make DESTDIR=$pkg install
+
+	ln -sfv libgpm.so.2.1.0 $pkg/usr/lib/libgpm.so
+	install -v -m644 conf/gpm-root.conf $pkg/etc
+
+	# runit service
+	install -Dm755 $src/run $pkg/etc/sv/$name/run
+	ln -s /run/runit/supervise.$name $pkg/etc/sv/$name/supervise
+}
